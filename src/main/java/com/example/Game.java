@@ -23,8 +23,6 @@ public class Game {
         this.playersJoined = 1;
         this.board = new int[boardSize][boardSize];
         this.executorService = Executors.newFixedThreadPool(4);
-        //this.executorService = Executors.newSingleThreadExecutor();
-
     }
 
     public Game(int boardSize, String player1, GUI gui) {
@@ -35,8 +33,6 @@ public class Game {
         this.setGUI(gui);
         this.board = new int[boardSize][boardSize];
         this.executorService = Executors.newFixedThreadPool(4);
-        //this.executorService = Executors.newSingleThreadExecutor();
-
     }
 
     public Game(int boardSize, String player1, String player2) {
@@ -45,28 +41,21 @@ public class Game {
         this.player2 = player2;
         this.playersJoined = 2;
         this.board = new int[boardSize][boardSize];
-        System.out.println();
         this.executorService = Executors.newFixedThreadPool(4);
-        //this.executorService = Executors.newSingleThreadExecutor();
     }
 
     public synchronized void changeBoard(int x, int y, int value) {
-        System.out.println("changeBoard called on thread: " + Thread.currentThread().getName());
         executorService.execute(() -> {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out
-                    .println("Executing changeBoard in ExecutorService on thread: " + Thread.currentThread().getName());
             board[x][y] = value;
             checkWin();
 
             // Update UI after task completion
             Platform.runLater(() -> {
-                System.out
-                        .println("Updating GUI from Platform.runLater on thread: " + Thread.currentThread().getName());
                 gui1.updateBoard();
                 gui2.updateBoard();
                 switchBoard(value);
@@ -74,10 +63,7 @@ public class Game {
         });
     }
 
-    // Method to shut down the ExecutorService
     public void shutdown() {
-        System.out.println("shutdown thread: " + Thread.currentThread().getName());
-
         executorService.shutdown();
     }
 
