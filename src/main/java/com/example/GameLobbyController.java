@@ -53,8 +53,8 @@ public class GameLobbyController {
                 System.out.println("Error: Grid size must be at most 10");
             } else {
                 GUI gui = new GUI(1, boardSize);
-                Socket gameSocket = new Socket(Protocol.getHost(), Protocol.getProt());
-                Protocol socket = new Protocol(gameSocket);
+                Socket gameSocket = new Socket(ProtocolS.getHost(), ProtocolS.getProt());
+                ProtocolS socket = new ProtocolS(gameSocket);
                 gui.setGame(gameSocket, socket);
                 socket.send(txNameInput.getText() + " " + boardSize);
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("gui.fxml"));

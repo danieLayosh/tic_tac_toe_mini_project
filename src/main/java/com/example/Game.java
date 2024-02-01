@@ -14,8 +14,8 @@ public class Game {
     private int playersJoined;
     private Socket playerSocket1;
     private Socket playerSocket2;
-    private Protocol socket1;
-    private Protocol socket2;
+    private ProtocolS socket1;
+    private ProtocolS socket2;
     // private GUI gui1;
     // private GUI gui2;
 
@@ -34,37 +34,34 @@ public class Game {
     public void setSocket(Socket socket) {
         if (playerSocket1 == null) {
             playerSocket1 = socket;
-            socket1 = new Protocol(socket);
+            socket1 = new ProtocolS(socket);
         } else {
             playerSocket2 = socket;
-            socket2 = new Protocol(socket);
+            socket2 = new ProtocolS(socket);
         }
     }
 
     public void changeBoard(int x, int y, int value) {
-        // executorService.execute(() -> {
-        // try {
-        // Thread.sleep(1);
-        // } catch (InterruptedException e) {
-        // e.printStackTrace();
-        // }
+
         board[x][y] = value;
+        System.out.println("Board changed at " + x + " " + y + " to " + value);
+
+        for(int i = 0; i < boardSize; i++) {
+            for(int j = 0; j < boardSize; j++) {
+                System.out.print(board[i][j] + " ");
+            }
+            System.out.println();
+        }
+
         checkWin();
 
         try {
-            socket1.send("updateBoard " + x + " " + y + " " + value);
-            socket2.send("updateBoard " + x + " " + y + " " + value);
+            socket1.send("refreshBoard " + x + " " + y + " " + value);
+            socket2.send("refreshBoard " + x + " " + y + " " + value);
             switchBoard(value);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
-        // // Update UI after task completion
-        // Platform.runLater(() -> {
-        // gui1.updateBoard();
-        // gui2.updateBoard();
-        // switchBoard(value);
-        // });
-        // });
     }
 
     public void shutdown() {
@@ -252,7 +249,7 @@ public class Game {
         return boardSize;
     }
 
-    public void close(){
+    public void close() {
         try {
             socket1.send("close");
             playerSocket1.close();

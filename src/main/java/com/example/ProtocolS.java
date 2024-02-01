@@ -4,15 +4,15 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 
-public class Protocol {
+public class ProtocolS {
 
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
     private static int PORT = 1234;
-    private static String HOST = "192.168.137.1";
+    private static String HOST = "10.100.102.18";
 
-    public Protocol(Socket socket) {
+    public ProtocolS(Socket socket) {
         this.socket = socket;
         try {
             this.in = new DataInputStream(socket.getInputStream());

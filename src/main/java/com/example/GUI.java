@@ -17,7 +17,7 @@ import javafx.scene.layout.VBox;
 
 public class GUI implements Initializable, gameInterface {
     private Socket gameSocket;
-    private Protocol gameSProtocol;
+    private ProtocolS gameSProtocol;
     private int value;
     private int boardSize;
     private String isFull;
@@ -55,7 +55,7 @@ public class GUI implements Initializable, gameInterface {
         this.player2 = player2;
     }
 
-    public void setGame(Socket game, Protocol gameSProtocol) {
+    public void setGame(Socket game, ProtocolS gameSProtocol) {
         this.gameSocket = game;
         this.gameSProtocol = gameSProtocol;
     }
@@ -70,6 +70,7 @@ public class GUI implements Initializable, gameInterface {
 
     public void updateBoard(int x, int y, int value) {
         this.board[x][y] = value;
+        refreshBoard();
     }
 
     public void refresh() {
@@ -106,6 +107,7 @@ public class GUI implements Initializable, gameInterface {
                         int y = GridPane.getRowIndex(bt);
                         try {
                             gameSProtocol.send(String.format("changeBoard %d %d %d", x, y, value));
+                            System.out.println("Button pressed: " + x + " " + y + " " + value);
                         } catch (Exception e) {
                             System.out.println("Error: " + e.getMessage());
                         }
