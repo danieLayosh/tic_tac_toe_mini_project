@@ -13,11 +13,14 @@ public class App extends Application {
 
     private static Scene scene;
 
+    private static Stage primaryStage;
+
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("host"), 640, 480);
+        scene = new Scene(loadFXML("lobby"), 640, 480);
+        stage.setTitle("Tic Tac Toe");
         stage.setScene(scene);
-
+        setPrimaryStage(stage);
         // Set the default close operation
         stage.setOnCloseRequest(event -> {
             // Close all other windows
@@ -40,4 +43,11 @@ public class App extends Application {
         launch();
     }
 
+    private void setPrimaryStage(Stage stage) {
+        App.primaryStage = stage;
+    }
+
+    static public Stage getPrimaryStage() {
+        return App.primaryStage;
+    }
 }

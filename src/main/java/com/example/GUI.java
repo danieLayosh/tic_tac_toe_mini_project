@@ -1,9 +1,8 @@
 package com.example;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.net.Socket;
 
-import javafx.application.Platform;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,8 +16,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public class GUI implements Initializable, gameInterface {
-    private Game game;
+    private Socket gameSocket;
+    private Protocol gameSProtocol;
     private int value;
+    private int boardSize;
+    private String isFull;
+    private int[][] board;
+    private String player1;
+    private String player2;
 
     @FXML
     private Label centerLabel;
@@ -30,28 +35,53 @@ public class GUI implements Initializable, gameInterface {
     private Label player2Name;
 
     @FXML
-    private Label playerName;
+    private Label player1Name;
 
-    public GUI(int value) {
+    public GUI(int value, int boardSize) {
+        this.value = value;
+        this.boardSize = boardSize;
+        this.board = new int[boardSize][boardSize];
+    }
+
+    void setIsFull(String isFull) {
+        this.isFull = isFull;
+    }
+
+    void setPlayer1(String player1) {
+        this.player1 = player1;
+    }
+
+    void setPlayer2(String player2) {
+        this.player2 = player2;
+    }
+
+    public void setGame(Socket game, Protocol gameSProtocol) {
+        this.gameSocket = game;
+        this.gameSProtocol = gameSProtocol;
+    }
+
+    public void setValue(int value) {
         this.value = value;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
+    public void setBoard(int[][] board) {
+        this.board = board;
+    }
+
+    public void updateBoard(int x, int y, int value) {
+        this.board[x][y] = value;
     }
 
     public void refresh() {
-        updatePlayerNames();
-        playersJoined();
+        gameSProtocol.send("getPlayers");
+        gameSProtocol.send("isFull");
     }
 
     public void createBoard() {
-        Platform.runLater(() -> {
-            if (!game.isFull()) {
+        try {
+            if (isFull == "false") {
                 return;
             }
-
-            int size = this.game.getBoardSize();
             VBox.setVgrow(gridPane, Priority.ALWAYS);
             VBox.setMargin(centerLabel, null);
             gridPane.getChildren().clear();
@@ -59,80 +89,96 @@ public class GUI implements Initializable, gameInterface {
             // Clear existing column and row constraints
             gridPane.getColumnConstraints().clear();
             gridPane.getRowConstraints().clear();
-
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < boardSize; i++) {
                 ColumnConstraints cc = new ColumnConstraints();
                 cc.setHgrow(Priority.ALWAYS); // allow column to grow
                 cc.setFillWidth(true); // ask nodes to fill space for column
                 gridPane.getColumnConstraints().add(cc);
-
                 RowConstraints rc = new RowConstraints();
                 rc.setVgrow(Priority.ALWAYS); // allow row to grow
                 rc.setFillHeight(true); // ask nodes to fill height for row
                 gridPane.getRowConstraints().add(rc);
-
-                for (int j = 0; j < size; j++) {
+                for (int j = 0; j < boardSize; j++) {
                     Button bt = new Button();
                     bt.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-
                     bt.setOnAction((ActionEvent event) -> {
                         int x = GridPane.getColumnIndex(bt);
                         int y = GridPane.getRowIndex(bt);
-                        game.changeBoard(x, y, value);
+                        try {
+                            gameSProtocol.send(String.format("changeBoard %d %d %d", x, y, value));
+                        } catch (Exception e) {
+                            System.out.println("Error: " + e.getMessage());
+                        }
                     });
 
                     bt.getStyleClass().add("button");
                     bt.setStyle("-fx-font-size: 35;");
+                    if (value == 2) {
+                        bt.setDisable(true);
+                    }
                     gridPane.add(bt, i, j);
+
                 }
             }
-        });
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     public void disableBoard() {
-        int size = game.getBoardSize();
-        for (int i = 0; i < size; i++) {
-            gridPane.addRow(i);
-            for (int j = 0; j < size; j++) {
-                gridPane.addColumn(j);
-                Button bt = (Button) gridPane.getChildren().get(i * size + j);
-                bt.setDisable(true);
+        try {
+            for (int i = 0; i < boardSize; i++) {
+                gridPane.addRow(i);
+                for (int j = 0; j < boardSize; j++) {
+                    gridPane.addColumn(j);
+                    Button bt = (Button) gridPane.getChildren().get(i * boardSize + j);
+                    bt.setDisable(true);
+                }
             }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
     public void enableBoard() {
-        int size = game.getBoardSize();
-        for (int i = 0; i < size; i++) {
-            gridPane.addRow(i);
-            for (int j = 0; j < size; j++) {
-                gridPane.addColumn(j);
-                Button bt = (Button) gridPane.getChildren().get(i * size + j);
-                if (game.getBoard()[i][j] != 0) {
-                    bt.setDisable(true);
-                    continue;
+        try {
+            for (int i = 0; i < boardSize; i++) {
+                gridPane.addRow(i);
+                for (int j = 0; j < boardSize; j++) {
+                    gridPane.addColumn(j);
+                    Button bt = (Button) gridPane.getChildren().get(i * boardSize + j);
+                    if (board[i][j] != 0) {
+                        bt.setDisable(true);
+                        continue;
+                    }
+                    bt.setDisable(false);
                 }
-                bt.setDisable(false);
             }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
-    private void playersJoined() {
-        if (game.isFull()) {
-            centerLabel.setStyle("-fx-font-size: 0;"); // Set font size
-            centerLabel.setText("");
-            centerLabel.disableProperty();
-        } else {
-            centerLabel.setStyle("-fx-font-size: 40;"); // Set font size
-            StackPane.setAlignment(centerLabel, javafx.geometry.Pos.CENTER);
-            centerLabel.setText("Waiting for players...");
+    public void playersJoined() {
+        try {
+            if (isFull.equals("true")) {
+                centerLabel.setStyle("-fx-font-size: 0;"); // Set font size
+                centerLabel.setText("");
+                centerLabel.disableProperty();
+            } else {
+                centerLabel.setStyle("-fx-font-size: 40;"); // Set font size
+                StackPane.setAlignment(centerLabel, javafx.geometry.Pos.CENTER);
+                centerLabel.setText("Waiting for players...");
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
-    private void updatePlayerNames() {
-        playerName.setText("player 1 is: " + game.getPlayers()[0]);
-        if (game.isFull()) {
-            player2Name.setText("player 2 is: " + game.getPlayers()[1]);
+    public void updatePlayersNames() {
+        player1Name.setText("player 1 is: " + player1);
+        if (isFull == "true") {
+            player2Name.setText("player 2 is: " + player2);
         } else {
             player2Name.setText("waiting for player 2");
         }
@@ -159,29 +205,24 @@ public class GUI implements Initializable, gameInterface {
         gridPane.visibleProperty().set(false);
     }
 
-    public void updateBoard() {
-        int[][] grid = game.getBoard();
-        int size = game.getBoardSize();
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                Button bt = (Button) gridPane.getChildren().get(i * size + j);
-                bt.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                if (grid[i][j] == 1) {
-                    bt.setText("X");
-                    bt.setDisable(true);
-                } else if (grid[i][j] == 2) {
-                    bt.setText("O");
-                    bt.setDisable(true);
+    public void refreshBoard() {
+        try {
+            for (int i = 0; i < boardSize; i++) {
+                for (int j = 0; j < boardSize; j++) {
+                    Button bt = (Button) gridPane.getChildren().get(i * boardSize + j);
+                    bt.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                    if (board[i][j] == 1) {
+                        bt.setText("X");
+                        bt.setDisable(true);
+                    } else if (board[i][j] == 2) {
+                        bt.setText("O");
+                        bt.setDisable(true);
+                    }
                 }
             }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
-        // for (int i = 0; i < grid.length; i++) {
-        //     System.out.print("[ ");
-        //     for (int g = 0; g < grid.length; g++) {
-        //         System.out.print(grid[i][g] + ",");
-        //     }
-        //     System.out.println("]");
-        // }
     }
 
     @Override

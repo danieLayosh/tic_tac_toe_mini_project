@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox onKeyPressed="#enterGame" prefHeight="400.0" prefWidth="640.0" style="-fx-background-color: red;" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.Host">
+<VBox onKeyPressed="#enterGame" prefHeight="400.0" prefWidth="640.0" style="-fx-background-color: red;" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.GameLobbyController">
    <children>
       <Label alignment="CENTER" onKeyPressed="#enterGame" prefHeight="18.0" prefWidth="664.0" text="Enter your name">
          <font>

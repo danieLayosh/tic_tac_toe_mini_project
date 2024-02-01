@@ -9,8 +9,8 @@ public class Protocol {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
-    private static int PORT = 8080;
-    private static String HOST = "192.168.43.2";
+    private static int PORT = 1234;
+    private static String HOST = "192.168.137.1";
 
     public Protocol(Socket socket) {
         this.socket = socket;
@@ -48,7 +48,7 @@ public class Protocol {
         }
     }
 
-    public static String getHOST() {
+    public static String getHost() {
         return HOST;
     }
 

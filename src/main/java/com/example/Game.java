@@ -1,5 +1,6 @@
 package com.example;
 
+import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,69 +12,72 @@ public class Game {
     private String player1;
     private String player2;
     private int playersJoined;
-    private GUI gui1;
-    private GUI gui2;
+    private Socket playerSocket1;
+    private Socket playerSocket2;
+    private Protocol socket1;
+    private Protocol socket2;
+    // private GUI gui1;
+    // private GUI gui2;
 
     private ExecutorService executorService;
 
-    public Game(int boardSize, GUI gui) {
-        this.boardSize = boardSize;
-        this.player1 = "player 1";
-        this.player2 = "player 2";
-        this.playersJoined = 1;
-        this.board = new int[boardSize][boardSize];
-        this.executorService = Executors.newFixedThreadPool(4);
-    }
-
-    public Game(int boardSize, String player1, GUI gui) {
+    public Game(int boardSize, String player1, Socket playerSocket1) {
         this.boardSize = boardSize;
         this.player1 = player1;
         this.player2 = "player 2";
         this.playersJoined = 1;
-        this.setGUI(gui);
+        this.setSocket(playerSocket1);
         this.board = new int[boardSize][boardSize];
-        this.executorService = Executors.newFixedThreadPool(4);
+        // this.executorService = Executors.newFixedThreadPool(4);
     }
 
-    public Game(int boardSize, String player1, String player2) {
-        this.boardSize = boardSize;
-        this.player1 = player1;
-        this.player2 = player2;
-        this.playersJoined = 2;
-        this.board = new int[boardSize][boardSize];
-        this.executorService = Executors.newFixedThreadPool(4);
+    public void setSocket(Socket socket) {
+        if (playerSocket1 == null) {
+            playerSocket1 = socket;
+            socket1 = new Protocol(socket);
+        } else {
+            playerSocket2 = socket;
+            socket2 = new Protocol(socket);
+        }
     }
 
-    public synchronized void changeBoard(int x, int y, int value) {
-        executorService.execute(() -> {
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            board[x][y] = value;
-            checkWin();
+    public void changeBoard(int x, int y, int value) {
+        // executorService.execute(() -> {
+        // try {
+        // Thread.sleep(1);
+        // } catch (InterruptedException e) {
+        // e.printStackTrace();
+        // }
+        board[x][y] = value;
+        checkWin();
 
-            // Update UI after task completion
-            Platform.runLater(() -> {
-                gui1.updateBoard();
-                gui2.updateBoard();
-                switchBoard(value);
-            });
-        });
+        try {
+            socket1.send("updateBoard " + x + " " + y + " " + value);
+            socket2.send("updateBoard " + x + " " + y + " " + value);
+            switchBoard(value);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        // // Update UI after task completion
+        // Platform.runLater(() -> {
+        // gui1.updateBoard();
+        // gui2.updateBoard();
+        // switchBoard(value);
+        // });
+        // });
     }
 
     public void shutdown() {
         executorService.shutdown();
     }
 
-    public void setGUI(GUI gui) {
-        if (gui1 == null) {
-            gui1 = gui;
-        } else {
-            gui2 = gui;
-        }
-    }
+    // public void setGUI(GUI gui) {
+    // if (gui1 == null) {
+    // gui1 = gui;
+    // } else {
+    // gui2 = gui;
+    // }
+    // }
 
     private void checkWin() {
         int size = this.boardSize;
@@ -166,66 +170,72 @@ public class Game {
     }
 
     private void win(int value) {
-        if (value == 1) {
-            Platform.runLater(() -> {
-                gui1.win();
-                gui2.lose();
-            });
-        } else {
-            Platform.runLater(() -> {
-                gui1.lose();
-                gui2.win();
-            });
+        try {
+            if (value == 1) {
+                socket1.send("win");
+                socket2.send("lose");
+            } else {
+                socket1.send("lose");
+                socket2.send("win");
+            }
+            shutdown();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
-        shutdown();
     }
 
     void switchBoard(int value) {
-        if (value == 1) {
-            Platform.runLater(() -> {
-                gui1.disableBoard();
-                gui2.enableBoard();
-            });
-        } else {
-            Platform.runLater(() -> {
-                gui1.enableBoard();
-                gui2.disableBoard();
-            });
+        try {
+            if (value == 1) {
+                socket1.send("disableBoard");
+                socket2.send("enableBoard");
+            } else {
+                socket1.send("enableBoard");
+                socket2.send("disableBoard");
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
-    public int[][] getBoard() {
-        return board;
+    // public int[][] getBoard() {
+    // return board;
+    // }
+
+    public int getBoard(int i, int j) {
+        return board[i][j];
     }
 
     public void updateGUI() {
-        Platform.runLater(() -> {
-            gui1.refresh();
-            gui2.refresh();
-        });
+        try {
+            socket1.send("getPlayers" + player1 + " " + player2);
+            socket2.send("getPlayers" + player1 + " " + player2);
+            socket1.send("isFull true");
+            socket2.send("isFull true");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     public void draw() {
-        Platform.runLater(() -> {
-            gui1.draw();
-            gui2.draw();
-        });
-        shutdown();
+        try {
+            socket1.send("draw");
+            socket2.send("draw");
+            shutdown();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     public void setPlayer2(String player2) {
         this.player2 = player2;
         this.playersJoined = 2;
-        if (boardSize > 20) {
-            Platform.runLater(() -> {
-                gui1.createBoard();
-                gui2.createBoard();
-                updateGUI();
-            });
-        } else {
-            gui1.createBoard();
-            gui2.createBoard();
+        try {
+            socket1.send("createBoard");
+            socket2.send("createBoard");
             updateGUI();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
 
     }
@@ -242,4 +252,16 @@ public class Game {
         return boardSize;
     }
 
+    public void close(){
+        try {
+            socket1.send("close");
+            playerSocket1.close();
+            if (playerSocket2 != null) {
+                socket2.send("close");
+                playerSocket2.close();
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
 }

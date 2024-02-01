@@ -1,7 +1,7 @@
 package com.example;
 
 public interface gameInterface {
-    public void updateBoard();
+    public void refreshBoard();
 
     public void disableBoard();
 
