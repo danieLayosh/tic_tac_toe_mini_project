@@ -16,8 +16,6 @@ public class Game {
     private Socket playerSocket2;
     private ProtocolS socket1;
     private ProtocolS socket2;
-    // private GUI gui1;
-    // private GUI gui2;
 
     private ExecutorService executorService;
 
@@ -44,7 +42,6 @@ public class Game {
     public void changeBoard(int x, int y, int value) {
 
         board[x][y] = value;
-        System.out.println("Board changed at " + x + " " + y + " to " + value);
 
         for(int i = 0; i < boardSize; i++) {
             for(int j = 0; j < boardSize; j++) {
@@ -67,14 +64,6 @@ public class Game {
     public void shutdown() {
         executorService.shutdown();
     }
-
-    // public void setGUI(GUI gui) {
-    // if (gui1 == null) {
-    // gui1 = gui;
-    // } else {
-    // gui2 = gui;
-    // }
-    // }
 
     private void checkWin() {
         int size = this.boardSize;
@@ -185,19 +174,19 @@ public class Game {
         try {
             if (value == 1) {
                 socket1.send("disableBoard");
+                socket1.send("not_your_turn");
                 socket2.send("enableBoard");
+                socket2.send("your_turn");
             } else {
                 socket1.send("enableBoard");
+                socket1.send("your_turn");
                 socket2.send("disableBoard");
+                socket2.send("not_your_turn");
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
-    // public int[][] getBoard() {
-    // return board;
-    // }
 
     public int getBoard(int i, int j) {
         return board[i][j];
@@ -207,6 +196,8 @@ public class Game {
         try {
             socket1.send("getPlayers" + player1 + " " + player2);
             socket2.send("getPlayers" + player1 + " " + player2);
+            socket1.send("opponentname" + " " + player2);
+            socket2.send("opponentname" + " " + player1);
             socket1.send("isFull true");
             socket2.send("isFull true");
         } catch (Exception e) {

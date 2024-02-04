@@ -2,7 +2,6 @@ package com.example;
 
 import java.net.Socket;
 
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,7 +16,7 @@ import javafx.scene.layout.VBox;
 
 public class GUI implements Initializable, gameInterface {
     private Socket gameSocket;
-    private ProtocolS gameSProtocol;
+    private ProtocolS gameSocketProtocol;
     private int value;
     private int boardSize;
     private String isFull;
@@ -55,9 +54,9 @@ public class GUI implements Initializable, gameInterface {
         this.player2 = player2;
     }
 
-    public void setGame(Socket game, ProtocolS gameSProtocol) {
+    public void setGame(Socket game, ProtocolS gameSocketProtocol) {
         this.gameSocket = game;
-        this.gameSProtocol = gameSProtocol;
+        this.gameSocketProtocol = gameSocketProtocol;
     }
 
     public void setValue(int value) {
@@ -73,9 +72,18 @@ public class GUI implements Initializable, gameInterface {
         refreshBoard();
     }
 
+    public void switch_turn_lable(Boolean isPlayerTurn) {
+        if (isPlayerTurn) {
+            player1Name.setText("your turn");
+        } else {
+            player1Name.setText("opponent's turn");
+        }
+    }
+
+    // protocol related method
     public void refresh() {
-        gameSProtocol.send("getPlayers");
-        gameSProtocol.send("isFull");
+        gameSocketProtocol.send("getPlayers");
+        gameSocketProtocol.send("isFull");
     }
 
     public void createBoard() {
@@ -106,8 +114,7 @@ public class GUI implements Initializable, gameInterface {
                         int x = GridPane.getColumnIndex(bt);
                         int y = GridPane.getRowIndex(bt);
                         try {
-                            gameSProtocol.send(String.format("changeBoard %d %d %d", x, y, value));
-                            System.out.println("Button pressed: " + x + " " + y + " " + value);
+                            gameSocketProtocol.send(String.format("changeBoard %d %d %d", x, y, value));
                         } catch (Exception e) {
                             System.out.println("Error: " + e.getMessage());
                         }
@@ -177,13 +184,9 @@ public class GUI implements Initializable, gameInterface {
         }
     }
 
-    public void updatePlayersNames() {
-        player1Name.setText("player 1 is: " + player1);
-        if (isFull == "true") {
-            player2Name.setText("player 2 is: " + player2);
-        } else {
-            player2Name.setText("waiting for player 2");
-        }
+    public void setOpponentsLable(String name){
+        System.out.println("opponent's name: " + name);
+        player2Name.setText("opponent's name: " + name);
     }
 
     public void win() {
@@ -207,6 +210,7 @@ public class GUI implements Initializable, gameInterface {
         gridPane.visibleProperty().set(false);
     }
 
+    // refresh the board
     public void refreshBoard() {
         try {
             for (int i = 0; i < boardSize; i++) {

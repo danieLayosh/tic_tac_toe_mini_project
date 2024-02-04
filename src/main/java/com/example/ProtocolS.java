@@ -22,7 +22,7 @@ public class ProtocolS {
         }
     }
 
-    public String res(){
+    public String readMessage(){
         try {
             return this.in.readUTF();
         } catch (Exception e) {
@@ -31,9 +31,9 @@ public class ProtocolS {
         return "";
     }
 
-    public void send(String msg){
+    public void send(String message){
         try {
-            this.out.writeUTF(msg);
+            this.out.writeUTF(message);
             this.out.flush();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());

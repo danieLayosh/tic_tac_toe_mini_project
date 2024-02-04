@@ -9,7 +9,8 @@ public class Host {
     public static void main(String[] args) {
         try {
             ServerSocket server = new ServerSocket();// make a new server
-            server.bind(new java.net.InetSocketAddress(ProtocolS.getHost(), ProtocolS.getProt())); // bind the server to the
+            server.bind(new java.net.InetSocketAddress(ProtocolS.getHost(), ProtocolS.getProt())); // bind the server to
+                                                                                                   // the
             System.out.println("Server started on port - " + ProtocolS.getProt() + " - waiting for clients...");
 
             Runtime.getRuntime().addShutdownHook(new Thread() { // add a shutdown hook
@@ -32,9 +33,9 @@ public class Host {
                 new Thread(() -> {
                     Boolean flag = true;
                     try {
-                        String msg = socket.res();
-                        String name = msg.split(" ")[0];
-                        String size = msg.split(" ")[1];
+                        String message = socket.readMessage();
+                        String name = message.split(" ")[0];
+                        String size = message.split(" ")[1];
                         Game currentgame = null;
                         for (Game game : games) {
                             if (game.getBoardSize() == Integer.parseInt(size) && !game.isFull()) {
@@ -51,10 +52,10 @@ public class Host {
                             currentgame = new Game(Integer.parseInt(size), name, client);
                         }
                         games.add(currentgame);
-                        System.out.println("Game created with size " + size);
+                        System.out.println("Game size - " + size);
                         while (flag && !client.isClosed()) {
-                            msg = socket.res();
-                            String[] msgArr = msg.split(" ");
+                            message = socket.readMessage();
+                            String[] msgArr = message.split(" ");
                             if (msgArr[0].equals("isFull")) {
                                 socket.send("isFull " + String.valueOf(currentgame.isFull()));
                             } else if (msgArr[0].equals("getBoardSize")) {
