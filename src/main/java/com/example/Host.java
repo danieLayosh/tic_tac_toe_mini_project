@@ -1,7 +1,6 @@
 package com.example;
 
 import java.util.ArrayList;
-
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -10,7 +9,6 @@ public class Host {
         try {
             ServerSocket server = new ServerSocket();// make a new server
             server.bind(new java.net.InetSocketAddress(ProtocolS.getHost(), ProtocolS.getProt())); // bind the server to
-                                                                                                   // the
             System.out.println("Server started on port - " + ProtocolS.getProt() + " - waiting for clients...");
 
             Runtime.getRuntime().addShutdownHook(new Thread() { // add a shutdown hook

@@ -10,7 +10,7 @@ public class ProtocolS {
     private DataInputStream in;
     private DataOutputStream out;
     private static int PORT = 8080;
-    private static String HOST = "192.168.137.1";
+    private static String HOST = "172.20.10.14";
 
     public ProtocolS(Socket socket) {
         this.socket = socket;
@@ -22,7 +22,7 @@ public class ProtocolS {
         }
     }
 
-    public String readMessage(){
+    public String readMessage() {
         try {
             return this.in.readUTF();
         } catch (Exception e) {
@@ -31,7 +31,7 @@ public class ProtocolS {
         return "";
     }
 
-    public void send(String message){
+    public void send(String message) {
         try {
             this.out.writeUTF(message);
             this.out.flush();
@@ -40,7 +40,7 @@ public class ProtocolS {
         }
     }
 
-    public void close(){
+    public void close() {
         try {
             this.socket.close();
         } catch (Exception e) {
@@ -52,7 +52,7 @@ public class ProtocolS {
         return HOST;
     }
 
-    public static int getProt(){
+    public static int getProt() {
         return PORT;
     }
 

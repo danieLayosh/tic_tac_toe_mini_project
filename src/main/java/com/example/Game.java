@@ -26,7 +26,6 @@ public class Game {
         this.playersJoined = 1;
         this.setSocket(playerSocket1);
         this.board = new int[boardSize][boardSize];
-        // this.executorService = Executors.newFixedThreadPool(4);
     }
 
     public void setSocket(Socket socket) {
@@ -43,12 +42,12 @@ public class Game {
 
         board[x][y] = value;
 
-        for(int i = 0; i < boardSize; i++) {
-            for(int j = 0; j < boardSize; j++) {
-                System.out.print(board[i][j] + " ");
-            }
-            System.out.println();
-        }
+        // for (int i = 0; i < boardSize; i++) {
+        //     for (int j = 0; j < boardSize; j++) {
+        //         System.out.print(board[i][j] + " ");
+        //     }
+        //     System.out.println();
+        // }
 
         checkWin();
 
