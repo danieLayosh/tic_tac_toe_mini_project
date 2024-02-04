@@ -7,9 +7,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox onKeyPressed="#enterGame" prefHeight="400.0" prefWidth="640.0" style="-fx-background-color: red;" xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.GameLobbyController">
+<VBox onKeyPressed="#Init" prefHeight="400.0" prefWidth="640.0" style="-fx-background-color: red;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.GameLobbyController">
    <children>
-      <Label alignment="CENTER" onKeyPressed="#enterGame" prefHeight="18.0" prefWidth="664.0" text="Enter your name">
+      <Label alignment="CENTER" prefHeight="18.0" prefWidth="664.0" text="Enter your name">
          <font>
             <Font name="System Bold Italic" size="36.0" />
          </font>
@@ -25,7 +25,7 @@
             <Font size="24.0" />
          </font>
       </TextField>
-      <Label fx:id="scene" alignment="CENTER" onKeyPressed="#enterGame" prefHeight="18.0" prefWidth="810.0" text="Enter the size of the board">
+      <Label fx:id="scene" alignment="CENTER" prefHeight="18.0" prefWidth="810.0" text="Enter the size of the board">
          <font>
             <Font name="System Bold Italic" size="36.0" />
          </font>
@@ -44,7 +44,7 @@
             <Insets top="20.0" />
          </VBox.margin>
       </TextField>
-      <Button fx:id="btEnterGame" alignment="CENTER" mnemonicParsing="false" onAction="#enterGame" text="Enter the game">
+      <Button fx:id="btEnterGame" alignment="CENTER" mnemonicParsing="false" onAction="#Init" text="Enter the game">
          <font>
             <Font size="24.0" />
          </font>

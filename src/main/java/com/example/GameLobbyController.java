@@ -113,9 +113,4 @@ public class GameLobbyController {
         }
     }
 
-    @FXML
-    void enterGame(ActionEvent event) throws IOException {
-        Init();
-    }
-
 }
