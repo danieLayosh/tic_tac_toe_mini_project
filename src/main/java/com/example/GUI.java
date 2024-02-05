@@ -1,6 +1,8 @@
 package com.example;
 
-import java.net.Socket;
+// import java.net.Socket;
+
+import com.example.IProtocol.ICommunicationHandler;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,14 +17,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public class GUI implements Initializable, gameInterface {
-    private Socket gameSocket;
-    private ProtocolS gameSocketProtocol;
+    // private Socket gameSocket;
+    private ICommunicationHandler gameSocketProtocol;
     private int value;
     private int boardSize;
     private String isFull;
     private int[][] board;
-    private String player1;
-    private String player2;
+    // private String player1;
+    // private String player2;
 
     @FXML
     private Label centerLabel;
@@ -46,16 +48,15 @@ public class GUI implements Initializable, gameInterface {
         this.isFull = isFull;
     }
 
-    void setPlayer1(String player1) {
-        this.player1 = player1;
-    }
+    // void setPlayer1(String player1) {
+    //     this.player1 = player1;
+    // }
 
-    void setPlayer2(String player2) {
-        this.player2 = player2;
-    }
+    // void setPlayer2(String player2) {
+    //     this.player2 = player2;
+    // }
 
-    public void setGame(Socket game, ProtocolS gameSocketProtocol) {
-        this.gameSocket = game;
+    public void setGame(ICommunicationHandler gameSocketProtocol) {
         this.gameSocketProtocol = gameSocketProtocol;
     }
 

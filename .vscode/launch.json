@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Server",
+            "request": "launch",
+            "mainClass": "com.example/com.example.Server",
+            "projectName": "tic_tac_toe_threading"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"

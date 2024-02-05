@@ -1,10 +1,12 @@
 package com.example;
 
-import java.net.Socket;
+// import java.net.Socket;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+// import java.util.concurrent.Executors;
 
-import javafx.application.Platform;
+import com.example.IProtocol.ICommunicationHandler;
+
+// import javafx.application.Platform;
 
 public class Game {
     private int boardSize;
@@ -12,31 +14,33 @@ public class Game {
     private String player1;
     private String player2;
     private int playersJoined;
-    private Socket playerSocket1;
-    private Socket playerSocket2;
-    private ProtocolS socket1;
-    private ProtocolS socket2;
+    // private Socket playerSocket1;
+    // private Socket playerSocket2;
+    private ICommunicationHandler socket1;
+    private ICommunicationHandler socket2;
 
     private ExecutorService executorService;
 
-    public Game(int boardSize, String player1, Socket playerSocket1) {
+    public Game(int boardSize, String player1, ICommunicationHandler handler) {
         this.boardSize = boardSize;
         this.player1 = player1;
-        this.player2 = "player 2";
+        this.player2 = "Awaiting player 2";
         this.playersJoined = 1;
-        this.setSocket(playerSocket1);
+        this.setCommunicationHandler(handler);
         this.board = new int[boardSize][boardSize];
     }
 
-    public void setSocket(Socket socket) {
-        if (playerSocket1 == null) {
-            playerSocket1 = socket;
-            socket1 = new ProtocolS(socket);
-        } else {
-            playerSocket2 = socket;
-            socket2 = new ProtocolS(socket);
+    public void setCommunicationHandler(ICommunicationHandler handler) {
+        if (this.socket1 == null) {
+            this.socket1 = handler;
+        } else if (this.socket2 == null) {
+            this.socket2 = handler;
+            this.playersJoined = 2;
+            this.player2 = "Player 2 Joined"; 
         }
     }
+    
+    
 
     public void changeBoard(int x, int y, int value) {
 
@@ -193,8 +197,8 @@ public class Game {
 
     public void updateGUI() {
         try {
-            socket1.send("getPlayers" + player1 + " " + player2);
-            socket2.send("getPlayers" + player1 + " " + player2);
+            // socket1.send("getPlayers" + player1 + " " + player2);
+            // socket2.send("getPlayers" + player1 + " " + player2);
             socket1.send("opponentname" + " " + player2);
             socket2.send("opponentname" + " " + player1);
             socket1.send("isFull true");
@@ -241,11 +245,11 @@ public class Game {
 
     public void close() {
         try {
-            socket1.send("close");
-            playerSocket1.close();
-            if (playerSocket2 != null) {
-                socket2.send("close");
-                playerSocket2.close();
+            if (socket1 != null) {
+                socket1.close();
+            }
+            if (socket2 != null) {
+                socket2.close();
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());

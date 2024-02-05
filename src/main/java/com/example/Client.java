@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.example.IProtocol.ICommunicationHandler;
+
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-public class GameLobbyController {
+public class Client {
     @FXML
     private Button btEnterGame;
 
@@ -45,47 +46,68 @@ public class GameLobbyController {
     }
 
     private void initializeGameSession(int boardSize) throws IOException {
+        if (boardSize < 3 || boardSize > 10) {
+            System.out.println("Error: Board size must be between 3 and 10");
+            return;
+        }
         try {
-            if (boardSize < 3) {
-                System.out.println("Error: Board size must be at least 3");
-            } else if (boardSize > 10) {
-                System.out.println("Error: Board size must be at most 10");
-            } else {
-                GUI gui = new GUI(1, boardSize);
-                Socket gameSocket = new Socket(ProtocolS.getHost(), ProtocolS.getProt()); // create a new socket
-                ProtocolS socket = new ProtocolS(gameSocket); // create a new protocol
-                gui.setGame(gameSocket, socket); // set the game socket
-                socket.send(txNameInput.getText() + " " + boardSize); // send the name and board size
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("gui.fxml"));
-                loader.setController(gui);
-                App.getPrimaryStage().setScene(new Scene(loader.load(), 640, 480)); // set the scene
+            GUI gui = new GUI(1, boardSize);
+            Socket gameSocket = new Socket(SocketCommunication.getHost(), SocketCommunication.getPort());
+            ICommunicationHandler socket = new SocketCommunication(gameSocket);
+            gui.setGame(socket); // set the game socket
+            socket.send(txNameInput.getText() + " " + boardSize); // send the name and board size
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("gui.fxml"));
+            loader.setController(gui);
+            Platform.runLater(() -> {
+                try {
+                    App.getPrimaryStage().setScene(new Scene(loader.load(), 640, 480));
+                } catch (IOException e) {
+                    System.out.println("Error: " + e.getMessage());
+                    e.printStackTrace();
+                }
                 App.getPrimaryStage().setTitle("Tic Tac Toe - " + txNameInput.getText());
-                App.getPrimaryStage().setOnCloseRequest(e -> {
-                    socket.send("close"); // close the socket
-                    isRunning.set(false); // close the thread
-                });
+            });
 
-                new Thread(() -> { // create a new thread
-                    try {
-                        while (isRunning.get()) { // while the thread is running
-                            String message = socket.readMessage();
-                            String[] msgArr = message.split(" ");
-                            Platform.runLater(() -> {
-                                gui_UI_update(gui, socket, msgArr);  
-                            });
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Error: " + e);
-                        isRunning.set(false);
-                    }
-                }).start();
-            }
+            App.getPrimaryStage().setOnCloseRequest(e -> {
+                socket.send("close"); // close the socket
+                isRunning.set(false); // close the thread
+            });
+
+            // Listen for messages from the server
+            new Thread(() -> listenForServerMessages(socket, gui)).start();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void gui_UI_update(GUI gui, ProtocolS socket, String[] msgArr) {
+    private void listenForServerMessages(ICommunicationHandler communicationHandler, GUI gui) {
+        try {
+            while (isRunning.get()) {
+                String message = communicationHandler.readMessage();
+                if (message == null || message.isEmpty()) {
+                    continue;
+                }
+                String[] msgArr = message.split(" ");
+                Platform.runLater(() -> gui_UI_update(gui, communicationHandler, msgArr));
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            Platform.runLater(() -> {
+                // Optional: Update the GUI or show an error message indicating the
+                // disconnection or error state.
+            });
+            isRunning.set(false);
+        } finally {
+            try {
+                communicationHandler.close();
+            } catch (Exception e) {
+                System.out.println("Error closing communication handler: " + e.getMessage());
+            }
+        }
+    }
+
+    private void gui_UI_update(GUI gui, ICommunicationHandler socket, String[] msgArr) {
         switch (msgArr[0]) {
             case "1":
             case "2":
@@ -128,8 +150,8 @@ public class GameLobbyController {
                 gui.createBoard();
                 break;
             case "getPlayers":
-                gui.setPlayer1(msgArr[1]);
-                gui.setPlayer2(msgArr[2]);
+                // gui.setPlayer1(msgArr[1]);
+                // gui.setPlayer2(msgArr[2]);
                 break;
             case "isFull":
                 gui.setIsFull(msgArr[1]);

@@ -1,18 +1,19 @@
 package com.example;
 
+import com.example.IProtocol.ICommunicationHandler;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 
-public class ProtocolS {
+public class SocketCommunication implements ICommunicationHandler {
 
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
     private static int PORT = 8080;
-    private static String HOST = "172.20.10.14";
+    private static String HOST = "192.168.137.1";
 
-    public ProtocolS(Socket socket) {
+    public SocketCommunication(Socket socket) {
         this.socket = socket;
         try {
             this.in = new DataInputStream(socket.getInputStream());
@@ -22,29 +23,34 @@ public class ProtocolS {
         }
     }
 
+    @Override
     public String readMessage() {
         try {
-            return this.in.readUTF();
+            return in.readUTF();
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println("Error in SocketCommunication -> readMessage: " + e.getMessage());
+            return null;
         }
-        return "";
     }
 
+    @Override
     public void send(String message) {
         try {
-            this.out.writeUTF(message);
-            this.out.flush();
+            out.writeUTF(message);
+            out.flush();
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println("Error in SocketCommunication -> send: " + e.getMessage());
         }
     }
 
+    @Override
     public void close() {
         try {
-            this.socket.close();
+            if (in != null) in.close();
+            if (out != null) out.close();
+            if (socket != null) socket.close();
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println("Error in SocketCommunication -> close: " + e.getMessage());
         }
     }
 
@@ -52,8 +58,7 @@ public class ProtocolS {
         return HOST;
     }
 
-    public static int getProt() {
+    public static int getPort() {
         return PORT;
     }
-
 }
