@@ -10,12 +10,12 @@
    <children>
       <HBox alignment="TOP_CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="21.0" prefWidth="600.0">
          <children>
-            <Label fx:id="player1Name" prefHeight="26.0" prefWidth="293.0" text="player_Name" textAlignment="JUSTIFY" textFill="WHITE">
+            <Label fx:id="playerName" prefHeight="26.0" prefWidth="293.0" text="player_Name" textAlignment="JUSTIFY" textFill="WHITE">
                <font>
                   <Font name="System Bold Italic" size="24.0" />
                </font>
             </Label>
-            <Label fx:id="player2Name" contentDisplay="RIGHT" prefHeight="26.0" prefWidth="326.0" text="opponent" textAlignment="JUSTIFY" textFill="WHITE">
+            <Label fx:id="opponent" contentDisplay="RIGHT" prefHeight="26.0" prefWidth="326.0" text="opponent" textAlignment="JUSTIFY" textFill="WHITE">
                <font>
                   <Font name="System Bold Italic" size="24.0" />
                </font>

@@ -33,10 +33,10 @@ public class GUI implements Initializable, gameInterface {
     private GridPane gridPane;
 
     @FXML
-    private Label player2Name;
+    private Label opponent;
 
     @FXML
-    private Label player1Name;
+    private Label playerName;
 
     public GUI(int value, int boardSize) {
         this.value = value;
@@ -46,6 +46,10 @@ public class GUI implements Initializable, gameInterface {
 
     void setIsFull(String isFull) {
         this.isFull = isFull;
+    }
+
+    public void showPlayerNameLable(String name){
+        playerName.setText(name);
     }
 
     // void setPlayer1(String player1) {
@@ -75,9 +79,9 @@ public class GUI implements Initializable, gameInterface {
 
     public void switch_turn_lable(Boolean isPlayerTurn) {
         if (isPlayerTurn) {
-            player1Name.setText("your turn");
+            playerName.setText("your turn");
         } else {
-            player1Name.setText("opponent's turn");
+            playerName.setText("opponent's turn");
         }
     }
 
@@ -187,7 +191,7 @@ public class GUI implements Initializable, gameInterface {
 
     public void setOpponentsLable(String name){
         System.out.println("opponent's name: " + name);
-        player2Name.setText("opponent's name: " + name);
+        opponent.setText("opponent's name: " + name);
     }
 
     public void win() {

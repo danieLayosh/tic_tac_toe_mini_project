@@ -14,27 +14,26 @@ public class Game {
     private String player1;
     private String player2;
     private int playersJoined;
-    // private Socket playerSocket1;
-    // private Socket playerSocket2;
-    private ICommunicationHandler socket1;
-    private ICommunicationHandler socket2;
+    private ICommunicationHandler handler1;
+    private ICommunicationHandler handler2;
 
     private ExecutorService executorService;
 
-    public Game(int boardSize, String player1, ICommunicationHandler handler) {
+    public Game(int boardSize, String player1, ICommunicationHandler handler1) {
         this.boardSize = boardSize;
         this.player1 = player1;
+        handler1.send("showPlayerName" + " " + player1);
         this.player2 = "Awaiting player 2";
         this.playersJoined = 1;
-        this.setCommunicationHandler(handler);
+        this.setCommunicationHandler(handler1);
         this.board = new int[boardSize][boardSize];
     }
 
     public void setCommunicationHandler(ICommunicationHandler handler) {
-        if (this.socket1 == null) {
-            this.socket1 = handler;
-        } else if (this.socket2 == null) {
-            this.socket2 = handler;
+        if (this.handler1 == null) {
+            this.handler1 = handler;
+        } else if (this.handler2 == null) {
+            this.handler2 = handler;
             this.playersJoined = 2;
             this.player2 = "Player 2 Joined"; 
         }
@@ -56,8 +55,8 @@ public class Game {
         checkWin();
 
         try {
-            socket1.send("refreshBoard " + x + " " + y + " " + value);
-            socket2.send("refreshBoard " + x + " " + y + " " + value);
+            handler1.send("refreshBoard " + x + " " + y + " " + value);
+            handler2.send("refreshBoard " + x + " " + y + " " + value);
             switchBoard(value);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -161,11 +160,11 @@ public class Game {
     private void win(int value) {
         try {
             if (value == 1) {
-                socket1.send("win");
-                socket2.send("lose");
+                handler1.send("win");
+                handler2.send("lose");
             } else {
-                socket1.send("lose");
-                socket2.send("win");
+                handler1.send("lose");
+                handler2.send("win");
             }
             shutdown();
         } catch (Exception e) {
@@ -176,15 +175,15 @@ public class Game {
     void switchBoard(int value) {
         try {
             if (value == 1) {
-                socket1.send("disableBoard");
-                socket1.send("not_your_turn");
-                socket2.send("enableBoard");
-                socket2.send("your_turn");
+                handler1.send("disableBoard");
+                handler1.send("not_your_turn");
+                handler2.send("enableBoard");
+                handler2.send("your_turn");
             } else {
-                socket1.send("enableBoard");
-                socket1.send("your_turn");
-                socket2.send("disableBoard");
-                socket2.send("not_your_turn");
+                handler1.send("enableBoard");
+                handler1.send("your_turn");
+                handler2.send("disableBoard");
+                handler2.send("not_your_turn");
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -197,12 +196,14 @@ public class Game {
 
     public void updateGUI() {
         try {
-            // socket1.send("getPlayers" + player1 + " " + player2);
-            // socket2.send("getPlayers" + player1 + " " + player2);
-            socket1.send("opponentname" + " " + player2);
-            socket2.send("opponentname" + " " + player1);
-            socket1.send("isFull true");
-            socket2.send("isFull true");
+            // handler1.send("getPlayers" + player1 + " " + player2);
+            // handler2.send("getPlayers" + player1 + " " + player2);
+            handler1.send("showPlayerName" + " " + player1);
+            handler2.send("showPlayerName" + " " + player2);
+            handler1.send("opponentname" + " " + player2);
+            handler2.send("opponentname" + " " + player1);
+            handler1.send("isFull true");
+            handler2.send("isFull true");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -210,8 +211,8 @@ public class Game {
 
     public void draw() {
         try {
-            socket1.send("draw");
-            socket2.send("draw");
+            handler1.send("draw");
+            handler2.send("draw");
             shutdown();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -222,8 +223,8 @@ public class Game {
         this.player2 = player2;
         this.playersJoined = 2;
         try {
-            socket1.send("createBoard");
-            socket2.send("createBoard");
+            handler1.send("createBoard");
+            handler2.send("createBoard");
             updateGUI();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -245,11 +246,11 @@ public class Game {
 
     public void close() {
         try {
-            if (socket1 != null) {
-                socket1.close();
+            if (handler1 != null) {
+                handler1.close();
             }
-            if (socket2 != null) {
-                socket2.close();
+            if (handler2 != null) {
+                handler2.close();
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());

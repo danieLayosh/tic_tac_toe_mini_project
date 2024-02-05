@@ -153,6 +153,9 @@ public class Client {
                 // gui.setPlayer1(msgArr[1]);
                 // gui.setPlayer2(msgArr[2]);
                 break;
+            case "showPlayerName":
+                gui.showPlayerNameLable(msgArr[1]);
+                break;
             case "isFull":
                 gui.setIsFull(msgArr[1]);
                 gui.playersJoined();
