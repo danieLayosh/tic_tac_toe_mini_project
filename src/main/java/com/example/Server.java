@@ -19,7 +19,7 @@ public class Server {
         // System.out.println("print the current time:" + new
         // java.util.Date().getTime());
 
-        ArrayList<Game> games = new ArrayList<Game>(); // create a list of games
+        ArrayList<GameManager> games = new ArrayList<GameManager>(); // create a list of games
         try {
             ServerSocket server = new ServerSocket();// make a new server
             server.bind(new java.net.InetSocketAddress(SocketCommunication.getHost(), SocketCommunication.getPort()));
@@ -50,9 +50,9 @@ public class Server {
                         String size = message.split(" ")[loginMessage.SIZE.ordinal()];
                         int clientSize = Integer.parseInt(size);
                         Boolean gameFound = false;
-                        Game currentgame = null;
+                        GameManager currentgame = null;
 
-                        for (Game game : games) {
+                        for (GameManager game : games) {
                             int currentgameSize = game.getBoardSize();
                             if (currentgameSize == clientSize && !game.isFull()) {
                                 communicationHandler.send(PLAYER2);
@@ -67,7 +67,7 @@ public class Server {
 
                         if (gameFound == false) {
                             communicationHandler.send(PLAYER1);
-                            currentgame = new Game(clientSize, name, communicationHandler);
+                            currentgame = new GameManager(clientSize, name, communicationHandler);
                         }
 
                         games.add(currentgame);
@@ -94,7 +94,7 @@ public class Server {
     }
 
     private static void clientLoop(Boolean flag, ICommunicationHandler communicationHandler, Socket clientSocket,
-            Game currentgame, ArrayList<Game> games) {
+            GameManager currentgame, ArrayList<GameManager> games) {
         while (flag && !clientSocket.isClosed()) {
             String message = communicationHandler.readMessage();
             String[] msgArr = message.split(" ");

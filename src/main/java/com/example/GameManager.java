@@ -8,7 +8,7 @@ import com.example.IProtocol.ICommunicationHandler;
 
 // import javafx.application.Platform;
 
-public class Game {
+public class GameManager {
     private int boardSize;
     private int[][] board;
     private String player1;
@@ -19,7 +19,7 @@ public class Game {
 
     private ExecutorService executorService;
 
-    public Game(int boardSize, String player1, ICommunicationHandler handler1) {
+    public GameManager(int boardSize, String player1, ICommunicationHandler handler1) {
         this.boardSize = boardSize;
         this.player1 = player1;
         handler1.send("showPlayerName" + " " + player1);

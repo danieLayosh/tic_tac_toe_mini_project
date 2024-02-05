@@ -48,16 +48,19 @@ public class GUI implements Initializable, gameInterface {
         this.isFull = isFull;
     }
 
-    public void showPlayerNameLable(String name){
-        playerName.setText(name);
+    public void showPlayerNameLable(String name) {
+        if (value == 1)
+            playerName.setText(name + " - START");
+        else
+            playerName.setText(name);
     }
 
     // void setPlayer1(String player1) {
-    //     this.player1 = player1;
+    // this.player1 = player1;
     // }
 
     // void setPlayer2(String player2) {
-    //     this.player2 = player2;
+    // this.player2 = player2;
     // }
 
     public void setGame(ICommunicationHandler gameSocketProtocol) {
@@ -189,7 +192,7 @@ public class GUI implements Initializable, gameInterface {
         }
     }
 
-    public void setOpponentsLable(String name){
+    public void setOpponentsLable(String name) {
         System.out.println("opponent's name: " + name);
         opponent.setText("opponent's name: " + name);
     }
