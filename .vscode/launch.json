@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Jdbc",
+            "request": "launch",
+            "mainClass": "com.example/com.example.dataBase.Jdbc",
+            "projectName": "tic_tac_toe_threading"
+        },
+        {
+            "type": "java",
             "name": "Server",
             "request": "launch",
             "mainClass": "com.example/com.example.Server",
