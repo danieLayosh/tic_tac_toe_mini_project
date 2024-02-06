@@ -53,11 +53,10 @@ public abstract class BaseDB extends BaseEntity {
 
     public int saveChanges(String sqlStr) {
         int rows = 0;
-        try (Statement stmt = connection.createStatement()) {
+        try {
             rows = stmt.executeUpdate(sqlStr);
         } catch (SQLException e) {
             System.out.println(e.getMessage() + "\nSQL: " + sqlStr);
-            // Consider logging this error and/or rethrowing a custom exception
         }
         return rows;
     }

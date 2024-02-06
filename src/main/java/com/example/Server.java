@@ -12,6 +12,7 @@ import com.example.dataBase.ViewModel.PlayerDB;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Timestamp;
 
 public class Server {
     private enum loginMessage {
@@ -25,19 +26,7 @@ public class Server {
         // System.out.println("print the current time:" + new
         // java.util.Date().getTime());
 
-        PlayerDB db = new PlayerDB();
-        PlayerList list = db.selectAll();
-        for (PlayerModel player : list) {
-            System.out.println(player.toString());
-        }
-
-        System.out.println("\ngames database - select all from \n");
-
-        GameDB gdb = new GameDB();
-        GameList glist = gdb.selectAll();
-        for (GameModel game : glist) {
-            System.out.println(game.toString());
-        }
+       
 
         ArrayList<GameManager> games = new ArrayList<GameManager>(); // create a list of games
         try {

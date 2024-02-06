@@ -1,10 +1,7 @@
 package com.example.dataBase.ViewModel;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 import com.example.dataBase.Model.BaseEntity;
@@ -13,26 +10,8 @@ import com.example.dataBase.Model.Collection.PlayerList;
 
 public class PlayerDB extends BaseDB {
 
-    private static final String URL_PATH = "jdbc:mysql://localhost/Tic_tac_toe_games";
-    private static final String DRIVER_CLASS = "com.mysql.cj.jdbc.Driver";
-    private static final String username = "root";
-    private static final String password = "tt112233";
-
-    private Connection connection;
-    private Statement stmt;
-    // private ResultSet res;
-
     public PlayerDB() {
         super();
-        try {
-            // Loading driver
-            Class.forName(DRIVER_CLASS);
-            // Connecting database...
-            connection = DriverManager.getConnection(URL_PATH, username, password);
-            stmt = connection.createStatement();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -64,6 +43,10 @@ public class PlayerDB extends BaseDB {
         PlayerList list = new PlayerList();
         lst.forEach(ent -> list.add((PlayerModel) ent));
         return list;
+    }
+
+    public PlayerModel selectPlayerByName(String name) {
+        return selectByName(name).get(0);
     }
 
     public int insert(PlayerModel player) {

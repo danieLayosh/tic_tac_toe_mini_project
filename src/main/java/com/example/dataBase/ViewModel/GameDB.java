@@ -9,30 +9,14 @@ import java.util.List;
 
 import com.example.dataBase.Model.BaseEntity;
 import com.example.dataBase.Model.GameModel;
+import com.example.dataBase.Model.PlayerModel;
 import com.example.dataBase.Model.Collection.GameList;
 import com.example.dataBase.Model.Collection.PlayerList;
 
 public class GameDB extends BaseDB {
-    private static final String URL_PATH = "jdbc:mysql://localhost/Tic_tac_toe_games";
-    private static final String DRIVER_CLASS = "com.mysql.cj.jdbc.Driver";
-    private static final String username = "root";
-    private static final String password = "tt112233";
-
-    private Connection connection;
-    private Statement stmt;
-    // private ResultSet res;
 
     public GameDB() {
         super();
-        try {
-            // Loading driver
-            Class.forName(DRIVER_CLASS);
-            // Connecting database...
-            connection = DriverManager.getConnection(URL_PATH, username, password);
-            stmt = connection.createStatement();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -85,36 +69,60 @@ public class GameDB extends BaseDB {
         return list;
     }
 
+    public int insert(GameModel game) {
+        String sqlStr = "INSERT INTO games (player1, player2, winner, boardSize, result, startTime, endTime) VALUES ('"
+                + game.getPlayer1().getPlayerName() + "', '" + game.getPlayer2().getPlayerName() + "', '"
+                + game.getWinner().getPlayerName() + "', " + game.getBoardSize() + ", '" + game.getResult().toString()
+                + "', '" + game.getStartTime() + "', '" + game.getEndTime() + "')";
+        return super.saveChanges(sqlStr);
+    }
+
+    public int update(GameModel game) {
+        String sqlStr = "UPDATE games SET player1 = '" + game.getPlayer1().getPlayerName() + "', player2 = '"
+                + game.getPlayer2().getPlayerName() + "', winner = '" + game.getWinner().getPlayerName()
+                + "', boardSize = "
+                + game.getBoardSize() + ", result = '" + game.getResult().toString() + "', startTime = '"
+                + game.getStartTime() + "', endTime = '" + game.getEndTime() + "' WHERE gameId = " + game.getId();
+        return super.saveChanges(sqlStr);
+    }
+
+    public int delete(int id) {
+        String sqlStr = "DELETE FROM games WHERE gameId = " + id;
+        return super.saveChanges(sqlStr);
+    }
+
+    public int delete(GameModel game) {
+        return delete(game.getId());
+    }
+
     protected GameModel createModel(GameModel game, ResultSet res) throws SQLException {
         game.setId(res.getInt("gameId"));
         String player1Name = res.getString("player1");
         String player2Name = res.getString("player2");
         String winnerName = res.getString("winner");
-        PlayerList player1List = new PlayerDB().selectByName(player1Name);
-        if (!player1List.isEmpty()) {
-            game.setPlayer1(player1List.get(0));
-        } else {
-            game.setPlayer1(null);
+
+        try {
+            game.setPlayer1(new PlayerDB().selectPlayerByName(player1Name));
+        } catch (IndexOutOfBoundsException e) {
+            game.setPlayer1(null); // Handle case when player is not found
         }
 
-        PlayerList player2List = new PlayerDB().selectByName(player2Name);
-        if (!player2List.isEmpty()) {
-            game.setPlayer2(player2List.get(0));
-        } else {
-            game.setPlayer2(null);
+        try {
+            game.setPlayer2(new PlayerDB().selectPlayerByName(player2Name));
+        } catch (IndexOutOfBoundsException e) {
+            game.setPlayer2(null); // Handle case when player is not found
         }
 
         if (winnerName == null || winnerName.isEmpty()) {
             game.setWinner(null);
-            return game;
         } else {
-            PlayerList winnerList = new PlayerDB().selectByName(winnerName);
-            if (!winnerList.isEmpty()) {
-                game.setWinner(winnerList.get(0));
-            } else {
-                game.setWinner(null);
+            try {
+                game.setWinner(new PlayerDB().selectPlayerByName(winnerName));
+            } catch (IndexOutOfBoundsException e) {
+                game.setWinner(null); // Handle case when winner is not found
             }
         }
+
         game.setBoardSize(res.getInt("boardSize"));
         String resultString = res.getString("result");
         GameModel.Result result = GameModel.Result.valueOf(resultString.toUpperCase());
