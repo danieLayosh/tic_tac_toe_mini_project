@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import com.example.dataBase.Model.BaseEntity;
 
-public abstract class BaseDB extends BaseEntity{
+public abstract class BaseDB extends BaseEntity {
     private static final String URL_PATH = "jdbc:mysql://localhost/Tic_tac_toe_games";
     private static final String DRIVER_CLASS = "com.mysql.cj.jdbc.Driver";
     private static final String username = "root";
@@ -20,6 +20,7 @@ public abstract class BaseDB extends BaseEntity{
     protected ResultSet res;
 
     protected abstract BaseEntity createModel(BaseEntity entity, ResultSet res) throws SQLException;
+
     protected abstract BaseEntity newEntity();
 
     public BaseDB() {
@@ -38,7 +39,7 @@ public abstract class BaseDB extends BaseEntity{
     public ArrayList<BaseEntity> select(String sqlStr) {
         ArrayList<BaseEntity> list = new ArrayList<BaseEntity>();
         try (Statement stmt = connection.createStatement();
-             ResultSet res = stmt.executeQuery(sqlStr)) {
+                ResultSet res = stmt.executeQuery(sqlStr)) {
             while (res.next()) {
                 BaseEntity entity = newEntity();
                 createModel(entity, res); // Now passing ResultSet as parameter
@@ -49,5 +50,16 @@ public abstract class BaseDB extends BaseEntity{
         }
         return list;
     }
-    
+
+    public int saveChanges(String sqlStr) {
+        int rows = 0;
+        try (Statement stmt = connection.createStatement()) {
+            rows = stmt.executeUpdate(sqlStr);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + "\nSQL: " + sqlStr);
+            // Consider logging this error and/or rethrowing a custom exception
+        }
+        return rows;
+    }
+
 }

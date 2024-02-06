@@ -40,6 +40,19 @@ public class PlayerDB extends BaseDB {
         return new PlayerModel();
     }
 
+    protected PlayerModel createModel(PlayerModel player, ResultSet res) throws SQLException {
+        player.setPlayerName(res.getString("playerName"));
+        return player;
+    }
+
+    @Override
+    protected BaseEntity createModel(BaseEntity entity, ResultSet res) throws SQLException {
+        if (entity instanceof PlayerModel) {
+            return createModel((PlayerModel) entity, res);
+        }
+        return null; // Or handle appropriately
+    }
+
     public PlayerList selectAll() {
         String sqlStr = "SELECT * FROM players";
         return new PlayerList(super.select(sqlStr));
@@ -53,16 +66,20 @@ public class PlayerDB extends BaseDB {
         return list;
     }
 
-    protected PlayerModel createModel(PlayerModel player, ResultSet res) throws SQLException {
-        player.setPlayerName(res.getString("playerName"));
-        return player;
+    public int insert(PlayerModel player) {
+        String sqlStr = "INSERT INTO players (playerName) VALUES ('" + player.getPlayerName() + "')";
+        return super.saveChanges(sqlStr);
     }
 
-    @Override
-    protected BaseEntity createModel(BaseEntity entity, ResultSet res) throws SQLException {
-        if (entity instanceof PlayerModel) {
-            return createModel((PlayerModel) entity, res);
-        }
-        return null; // Or handle appropriately
+    public int update(PlayerModel player, String newName) {
+        String sqlStr = "UPDATE players SET playerName = '" + newName + "' WHERE playerName = '"
+                + player.getPlayerName() + "'";
+        return super.saveChanges(sqlStr);
     }
+
+    public int delete(PlayerModel player) {
+        String sqlStr = "DELETE FROM players WHERE playerName = '" + player.getPlayerName() + "'";
+        return super.saveChanges(sqlStr);
+    }
+
 }
