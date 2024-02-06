@@ -3,6 +3,7 @@ package com.example;
 import java.util.ArrayList;
 
 import com.example.IProtocol.ICommunicationHandler;
+import com.example.dataBase.Jdbc;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,12 +14,14 @@ public class Server {
     };
 
     public static final String PLAYER1 = "1", PLAYER2 = "2";
+    private static Jdbc jdbc;
 
     public static void main(String[] args) {
         // System.out.println("print the current date:" + new java.util.Date());
         // System.out.println("print the current time:" + new
         // java.util.Date().getTime());
 
+        jdbc = new Jdbc();
         ArrayList<GameManager> games = new ArrayList<GameManager>(); // create a list of games
         try {
             ServerSocket server = new ServerSocket();// make a new server
@@ -39,7 +42,7 @@ public class Server {
 
             while (true) { // infinite loop
                 Socket clientSocket = server.accept(); // accept a new client
-                ICommunicationHandler communicationHandler = new SocketCommunication(clientSocket); 
+                ICommunicationHandler communicationHandler = new SocketCommunication(clientSocket);
                 System.out.println("Client connected from " + clientSocket.getInetAddress());
 
                 new Thread(() -> {
