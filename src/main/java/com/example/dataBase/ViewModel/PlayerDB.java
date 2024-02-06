@@ -20,7 +20,7 @@ public class PlayerDB extends BaseDB {
 
     private Connection connection;
     private Statement stmt;
-    private ResultSet res;
+    // private ResultSet res;
 
     public PlayerDB() {
         super();
@@ -53,42 +53,6 @@ public class PlayerDB extends BaseDB {
         return list;
     }
 
-    // public PlayerList select(String sqlStr) {
-    // // ResultSet res = null;
-    // PlayerModel player;
-    // PlayerList playerList = new PlayerList();
-    // try {
-    // res = stmt.executeQuery(sqlStr);
-    // while (res.next()) {
-    // player = new PlayerModel();
-    // createModel(player);
-    // // player.setPlayerName(res.getString("playerName"));
-    // playerList.add(player);
-    // }
-    // } catch (SQLException e) {
-    // System.out.println(e.getMessage());
-    // } finally {
-    // try {
-    // if (res != null && !res.isClosed())
-    // res.close();
-    // } catch (SQLException e) {
-    // e.printStackTrace();
-    // }
-    // try {
-    // if (!stmt.isClosed())
-    // stmt.close();
-    // } catch (SQLException e) {
-    // e.printStackTrace();
-    // }
-    // }
-    // return playerList;
-    // }
-
-    // protected PlayerModel createModel(PlayerModel player) throws SQLException {
-    //     player.setPlayerName(res.getString("playerName"));
-    //     return player;
-    // }
-
     protected PlayerModel createModel(PlayerModel player, ResultSet res) throws SQLException {
         player.setPlayerName(res.getString("playerName"));
         return player;
@@ -97,9 +61,6 @@ public class PlayerDB extends BaseDB {
     @Override
     protected BaseEntity createModel(BaseEntity entity, ResultSet res) throws SQLException {
         if (entity instanceof PlayerModel) {
-            // PlayerModel player = (PlayerModel) entity;
-            // player.setPlayerName(res.getString("playerName"));
-            // Set other fields as necessary
             return createModel((PlayerModel) entity, res);
         }
         return null; // Or handle appropriately

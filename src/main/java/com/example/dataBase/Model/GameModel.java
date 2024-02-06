@@ -76,10 +76,9 @@ public class GameModel extends BaseEntity {
         String winnerString = (winner != null) ? winner.getPlayerName() : "NO WINNER";
         String s = super.getId() + " -> {" +
                 this.player1.getPlayerName() + ", " + this.player2.getPlayerName() + ", " +
-                winnerString + ", " + this.boardSize + ", " +
-                this.result + ", " + this.startTime + ", " +
+                this.result + ", " + winnerString + ", " +
+                this.boardSize + ", " + this.startTime + ", " +
                 this.endTime + "} ";
         return s;
     }
-
 }

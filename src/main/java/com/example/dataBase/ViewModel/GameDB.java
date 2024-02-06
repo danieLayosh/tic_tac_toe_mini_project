@@ -20,7 +20,7 @@ public class GameDB extends BaseDB {
 
     private Connection connection;
     private Statement stmt;
-    private ResultSet res;
+    // private ResultSet res;
 
     public GameDB() {
         super();
@@ -45,14 +45,40 @@ public class GameDB extends BaseDB {
         return new GameList(super.select(sqlStr));
     }
 
-    // public GameList selectByPlayerName(String name) {
-    // String sqlStr = "SELECT * FROM games WHERE player1 = '" + name + "' OR
-    // player2 = '" + name + "'";
-    // return select(sqlStr);
-    // }
+    public GameList selectGameByPlayerName(String name) {
+        String sqlStr = "SELECT * FROM games WHERE player1 = '" + name + "' OR player2 = '" + name + "'";
+        List<BaseEntity> lst = super.select(sqlStr);
+        GameList list = new GameList();
+        lst.forEach(ent -> list.add((GameModel) ent));
+        return list;
+    }
 
     public GameList selectByGameID(int id) {
-        String sqlStr = "SELECT * FROM games WHERE gameId = '" + id + "'";
+        String sqlStr = "SELECT * FROM games WHERE gameId = " + id;
+        List<BaseEntity> lst = super.select(sqlStr);
+        GameList list = new GameList();
+        lst.forEach(ent -> list.add((GameModel) ent));
+        return list;
+    }
+
+    public GameList selectByBoardSize(int size) {
+        String sqlStr = "SELECT * FROM games WHERE boardSize = " + size;
+        List<BaseEntity> lst = super.select(sqlStr);
+        GameList list = new GameList();
+        lst.forEach(ent -> list.add((GameModel) ent));
+        return list;
+    }
+
+    public GameList selectWinGame() {
+        String sqlStr = "SELECT * FROM games WHERE result = 'WIN'";
+        List<BaseEntity> lst = super.select(sqlStr);
+        GameList list = new GameList();
+        lst.forEach(ent -> list.add((GameModel) ent));
+        return list;
+    }
+
+    public GameList selectDrawGame() {
+        String sqlStr = "SELECT * FROM games WHERE result = 'DRAW'";
         List<BaseEntity> lst = super.select(sqlStr);
         GameList list = new GameList();
         lst.forEach(ent -> list.add((GameModel) ent));
@@ -61,7 +87,6 @@ public class GameDB extends BaseDB {
 
     protected GameModel createModel(GameModel game, ResultSet res) throws SQLException {
         game.setId(res.getInt("gameId"));
-        // Assuming your result set includes columns for player names
         String player1Name = res.getString("player1");
         String player2Name = res.getString("player2");
         String winnerName = res.getString("winner");
@@ -69,16 +94,14 @@ public class GameDB extends BaseDB {
         if (!player1List.isEmpty()) {
             game.setPlayer1(player1List.get(0));
         } else {
-            // Handle the case when no player is found. For example:
-            game.setPlayer1(null); // Or set to a default player object
+            game.setPlayer1(null);
         }
 
         PlayerList player2List = new PlayerDB().selectByName(player2Name);
         if (!player2List.isEmpty()) {
             game.setPlayer2(player2List.get(0));
         } else {
-            // Handle the case when no player is found.
-            game.setPlayer2(null); // Or set to a default player object
+            game.setPlayer2(null);
         }
 
         if (winnerName == null || winnerName.isEmpty()) {
@@ -89,8 +112,7 @@ public class GameDB extends BaseDB {
             if (!winnerList.isEmpty()) {
                 game.setWinner(winnerList.get(0));
             } else {
-                // Handle the case when no winner is found. For example:
-                game.setWinner(null); // Or set to a default player object, or handle draws differently
+                game.setWinner(null);
             }
         }
         game.setBoardSize(res.getInt("boardSize"));
@@ -107,36 +129,6 @@ public class GameDB extends BaseDB {
         if (entity instanceof GameModel) {
             return createModel((GameModel) entity, res);
         }
-        return null; // Or handle the case where the entity is not a GameModel
+        return null;
     }
-
-    // public GameList select(String sqlStr) {
-    // GameModel game;
-    // GameList gameList = new GameList();
-    // try {
-    // res = stmt.executeQuery(sqlStr);
-    // while (res.next()) {
-    // game = new GameModel();
-    // createModel(game);
-    // gameList.add(game);
-    // }
-    // } catch (SQLException e) {
-    // System.out.println(e.getMessage());
-    // } finally {
-    // try {
-    // if (res != null && !res.isClosed())
-    // res.close();
-    // } catch (SQLException e) {
-    // e.printStackTrace();
-    // }
-    // try {
-    // if (!stmt.isClosed())
-    // stmt.close();
-    // } catch (SQLException e) {
-    // e.printStackTrace();
-    // }
-    // }
-    // return gameList;
-    // }
-
 }

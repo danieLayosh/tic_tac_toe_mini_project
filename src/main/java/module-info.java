@@ -6,5 +6,7 @@ module com.example {
     opens com.example to javafx.fxml;
     exports com.example;
     exports com.example.IProtocol;
-    exports com.example.dataBase;
+    exports com.example.dataBase.Model;
+    exports com.example.dataBase.Model.Collection;
+    exports com.example.dataBase.ViewModel;
 }
