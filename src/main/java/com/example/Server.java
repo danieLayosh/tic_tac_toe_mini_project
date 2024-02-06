@@ -26,45 +26,7 @@ public class Server {
         // System.out.println("print the current time:" + new
         // java.util.Date().getTime());
 
-        PlayerDB db = new PlayerDB();
-        PlayerList list = db.selectAll();
-        for (PlayerModel player : list) {
-            System.out.println(player.toString());
-        }
-
-        System.out.println("\ngames database - select all from \n");
-
-        GameDB gdb = new GameDB();
-        GameList glist = gdb.selectAll();
-        for (GameModel game : glist) {
-            System.out.println(game.toString());
-        }
-
-        // GameModel newGame = new GameModel();
-        // gdb.insert(newGame);
-        // glist = gdb.selectAll();
-        // for (GameModel game : glist) {
-        // System.out.println(game.toString());
-        // }
-
-        GameModel gameT = new GameModel();
-        // Assume these player names exist in your database
-        gameT.setPlayer1(new PlayerModel("Alice")); // Set with actual player model
-        gameT.setPlayer2(new PlayerModel("Daniel")); // Set with actual player model
-        gameT.setWinner(new PlayerModel("Daniel")); // Assume player one wins
-        gameT.setBoardSize(3);
-        gameT.setResult(GameModel.Result.WIN);
-        gameT.setStartTime(new Timestamp(System.currentTimeMillis()));
-        gameT.setEndTime(new Timestamp(System.currentTimeMillis()));
-        gameT.setId(4);
-
-        int rowsAffected = gdb.update(gameT);
-        System.out.println("Insert operation affected " + rowsAffected + " rows.");
-
-        glist = gdb.selectAll();
-        for (GameModel game : glist) {
-            System.out.println(game.toString());
-        }
+        
 
         ArrayList<GameManager> games = new ArrayList<GameManager>(); // create a list of games
         try {
