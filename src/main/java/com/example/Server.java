@@ -20,14 +20,12 @@ public class Server {
     };
 
     public static final String PLAYER1 = "1", PLAYER2 = "2";
-    private static Jdbc jdbc;
 
     public static void main(String[] args) {
         // System.out.println("print the current date:" + new java.util.Date());
         // System.out.println("print the current time:" + new
         // java.util.Date().getTime());
 
-        // jdbc = new Jdbc();
 
         PlayerDB db = new PlayerDB();
         PlayerList list = db.selectAll();
