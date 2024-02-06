@@ -4,6 +4,12 @@ import java.util.ArrayList;
 
 import com.example.IProtocol.ICommunicationHandler;
 import com.example.dataBase.Jdbc;
+import com.example.dataBase.Model.GameModel;
+import com.example.dataBase.Model.PlayerModel;
+import com.example.dataBase.Model.Collection.GameList;
+import com.example.dataBase.Model.Collection.PlayerList;
+import com.example.dataBase.ViewModel.GameDB;
+import com.example.dataBase.ViewModel.PlayerDB;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -21,7 +27,21 @@ public class Server {
         // System.out.println("print the current time:" + new
         // java.util.Date().getTime());
 
-        jdbc = new Jdbc();
+        // jdbc = new Jdbc();
+
+        PlayerDB db = new PlayerDB();
+        PlayerList list = db.selectAll();
+        for (PlayerModel player : list) {
+            System.out.println(player.toString());
+        }
+
+        System.out.println("\ngames database - select all from \n");
+        GameDB gdb = new GameDB();
+        GameList glist = gdb.selectAll();
+        for (GameModel game : glist) {
+            System.out.println(game.toString());
+        }
+
         ArrayList<GameManager> games = new ArrayList<GameManager>(); // create a list of games
         try {
             ServerSocket server = new ServerSocket();// make a new server

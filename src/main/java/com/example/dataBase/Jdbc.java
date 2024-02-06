@@ -8,24 +8,30 @@ import java.sql.Statement;
 
 public class Jdbc {
 
-    private static final String DATABASE_URL = "jdbc:mysql://localhost/Tic_tac_toe_games";
-    private static final String DATABASE_DRIVER = "com.mysql.cj.jdbc.Driver";
-  
+    private static final String URL_PATH = "jdbc:mysql://localhost/Tic_tac_toe_games";
+    private static final String DRIVER_CLASS = "com.mysql.cj.jdbc.Driver";
+    private static final String username = "root";
+    private static final String password = "tt112233";
+
+    private Connection connection;
+    private Statement stmt;
+    private ResultSet res;
+
     public Jdbc(){
         try {
             // This line loads the JDBC driver class
-            Class.forName(DATABASE_DRIVER);
-            Connection connection = DriverManager.getConnection(DATABASE_URL, "root", "tt112233"); // can add user and password if needed
-            Statement stmt = connection.createStatement();
+            Class.forName(DRIVER_CLASS);
+            connection = DriverManager.getConnection(URL_PATH, username, password);
+            stmt = connection.createStatement();
+            
+            res = stmt.executeQuery("select gameId, player1, player2, winner, boardSize, result, startTime, endTime from games");
 
-            ResultSet resultSet = stmt.executeQuery("select gameId, player1, player2, result, winner, boardSize, startTime, endTime from games");
-
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString("gameId") + " -> {" +
-                        resultSet.getString(2) + ", " + resultSet.getString(3) + ", " +
-                        resultSet.getString(4) + ", " + resultSet.getString(5) + ", " +
-                        resultSet.getString(6) + ", " + resultSet.getString(7) + ", " +
-                        resultSet.getString(8) + "} ");
+            while (res.next()) {
+                System.out.println(res.getString("gameId") + " -> {" +
+                        res.getString(2) + ", " + res.getString(3) + ", " +
+                        res.getString(4) + ", " + res.getString(5) + ", " +
+                        res.getString(6) + ", " + res.getString(7) + ", " +
+                        res.getString(8) + "} ");
             }
 
             connection.close();
@@ -38,4 +44,6 @@ public class Jdbc {
             System.out.println("Exception: " + e.getMessage());
         }
     }
+
+    
 }

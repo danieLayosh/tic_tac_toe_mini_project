@@ -11,7 +11,8 @@ public class SocketCommunication implements ICommunicationHandler {
     private DataInputStream in;
     private DataOutputStream out;
     private static int PORT = 8080;
-    private static String HOST = "192.168.16.176";
+    private static String HOST = "0.0.0.0";
+    // private static String HOST = "192.168.16.176";
 
     public SocketCommunication(Socket socket) {
         this.socket = socket;
