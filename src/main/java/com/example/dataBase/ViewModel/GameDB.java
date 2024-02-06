@@ -119,8 +119,8 @@ public class GameDB extends BaseDB {
         String resultString = res.getString("result");
         GameModel.Result result = GameModel.Result.valueOf(resultString.toUpperCase());
         game.setResult(result);
-        game.setStartTime(res.getDate("startTime"));
-        game.setEndTime(res.getDate("endTime"));
+        game.setStartTime(res.getTimestamp("startTime"));
+        game.setEndTime(res.getTimestamp("endTime"));
         return game;
     }
 

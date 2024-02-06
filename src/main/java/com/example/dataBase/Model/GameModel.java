@@ -1,6 +1,6 @@
 package com.example.dataBase.Model;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class GameModel extends BaseEntity {
     public enum Result {
@@ -11,8 +11,8 @@ public class GameModel extends BaseEntity {
     private PlayerModel player2;
     private PlayerModel winner;
     private int boardSize;
-    private Date startTime;
-    private Date endTime;
+    private Timestamp startTime;
+    private Timestamp endTime;
     private Result result;
 
     public PlayerModel getPlayer1() {
@@ -47,19 +47,19 @@ public class GameModel extends BaseEntity {
         this.boardSize = boardSize;
     }
 
-    public Date getStartTime() {
+    public Timestamp getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(Timestamp startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public Timestamp getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(Timestamp endTime) {
         this.endTime = endTime;
     };
 
@@ -73,12 +73,10 @@ public class GameModel extends BaseEntity {
 
     @Override
     public String toString() {
-        String winnerString = (winner != null) ? winner.getPlayerName() : "NO WINNER";
-        String s = super.getId() + " -> {" +
+        return super.getId() + " -> {" +
                 this.player1.getPlayerName() + ", " + this.player2.getPlayerName() + ", " +
-                this.result + ", " + winnerString + ", " +
-                this.boardSize + ", " + this.startTime + ", " +
-                this.endTime + "} ";
-        return s;
+                this.result + ", " + ((winner != null) ? winner.getPlayerName() : "NO WINNER") + ", " +
+                this.boardSize + ", " + this.getStartTime() + ", " +
+                this.getEndTime() + "} ";
     }
 }

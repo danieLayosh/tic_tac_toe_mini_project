@@ -34,7 +34,7 @@ public class Server {
         System.out.println("\ngames database - select all from \n");
 
         GameDB gdb = new GameDB();
-        GameList glist = gdb.selectByBoardSize(4);
+        GameList glist = gdb.selectAll();
         for (GameModel game : glist) {
             System.out.println(game.toString());
         }
