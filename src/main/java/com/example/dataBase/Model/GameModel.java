@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 public class GameModel extends BaseEntity {
     public enum Result {
-        WIN, LOSE, DRAW
+        WIN, ACTIVE, DRAW
     }
 
     private PlayerModel player1;
@@ -14,6 +14,22 @@ public class GameModel extends BaseEntity {
     private Timestamp startTime;
     private Timestamp endTime;
     private Result result;
+
+    public GameModel() {
+        super();
+
+    }
+
+    public GameModel(PlayerModel player1, PlayerModel player2, int boardSize, Timestamp restTimes) {
+        super();
+        this.player1 = player1;
+        this.player2 = player2;
+        this.winner = null;
+        this.boardSize = boardSize;
+        this.startTime = restTimes;
+        this.endTime = restTimes;
+        this.result = null;
+    }
 
     public PlayerModel getPlayer1() {
         return player1;

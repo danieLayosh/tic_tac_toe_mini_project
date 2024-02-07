@@ -1,14 +1,16 @@
 package com.example;
 
-// import java.net.Socket;
+import java.sql.Timestamp;
 import java.util.concurrent.ExecutorService;
-// import java.util.concurrent.Executors;
 
 import com.example.IProtocol.ICommunicationHandler;
-
-// import javafx.application.Platform;
+import com.example.dataBase.Model.GameModel;
+import com.example.dataBase.Model.PlayerModel;
+import com.example.dataBase.ViewModel.GameDB;
+import com.example.dataBase.ViewModel.PlayerDB;
 
 public class GameManager {
+    private int id;
     private int boardSize;
     private int[][] board;
     private String player1;
@@ -16,17 +18,38 @@ public class GameManager {
     private int playersJoined;
     private ICommunicationHandler handler1;
     private ICommunicationHandler handler2;
+    private GameModel gameModel;
+    private PlayerModel player1Model;
+    private PlayerModel player2Model;
 
-    private ExecutorService executorService;
+    private static final GameDB gameDB = new GameDB();
+    private static final PlayerDB playerDB = new PlayerDB();
 
     public GameManager(int boardSize, String player1, ICommunicationHandler handler1) {
         this.boardSize = boardSize;
         this.player1 = player1;
         handler1.send("showPlayerName" + " " + player1);
-        this.player2 = "Awaiting player 2";
+        this.player2 = "player2";
         this.playersJoined = 1;
         this.setCommunicationHandler(handler1);
         this.board = new int[boardSize][boardSize];
+
+        player1Model = new PlayerModel(player1);
+        player2Model = new PlayerModel(player2);
+        if (playerDB.selectByName(player1).size() == 0) {
+            playerDB.insert(player1Model);
+        } else {
+            player1Model = playerDB.selectByName(player1).get(0);
+        }
+        playerDB.insert(player2Model);
+        playerDB.saveChanges();
+
+        this.gameModel = new GameModel(player1Model, player2Model, boardSize,
+                Timestamp.class.cast(new Timestamp(System.currentTimeMillis())));
+        gameModel.setResult(GameModel.Result.ACTIVE);
+        gameDB.insert(gameModel);
+        gameDB.saveChanges();
+        this.setId(gameModel.getId());
     }
 
     public void setCommunicationHandler(ICommunicationHandler handler) {
@@ -35,22 +58,13 @@ public class GameManager {
         } else if (this.handler2 == null) {
             this.handler2 = handler;
             this.playersJoined = 2;
-            this.player2 = "Player 2 Joined"; 
+            this.player2 = "Player 2 Joined";
         }
     }
-    
-    
 
     public void changeBoard(int x, int y, int value) {
 
         board[x][y] = value;
-
-        // for (int i = 0; i < boardSize; i++) {
-        //     for (int j = 0; j < boardSize; j++) {
-        //         System.out.print(board[i][j] + " ");
-        //     }
-        //     System.out.println();
-        // }
 
         checkWin();
 
@@ -61,10 +75,6 @@ public class GameManager {
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
-    }
-
-    public void shutdown() {
-        executorService.shutdown();
     }
 
     private void checkWin() {
@@ -158,15 +168,35 @@ public class GameManager {
     }
 
     private void win(int value) {
+        gameModel.setResult(GameModel.Result.WIN);
+        gameModel.setEndTime(Timestamp.class.cast(new Timestamp(System.currentTimeMillis())));
+        // gameDB.update(gameModel);
+        // gameDB.saveChanges();
         try {
             if (value == 1) {
                 handler1.send("win");
                 handler2.send("lose");
+                gameModel.setWinner(player1Model);
             } else {
                 handler1.send("lose");
                 handler2.send("win");
+                gameModel.setWinner(player2Model);
             }
-            shutdown();
+            gameDB.update(gameModel);
+            gameDB.saveChanges();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    public void draw() {
+        this.gameModel.setResult(GameModel.Result.DRAW);
+        this.gameModel.setEndTime(Timestamp.class.cast(new Timestamp(System.currentTimeMillis())));
+        gameDB.update(gameModel);
+        gameDB.saveChanges();
+        try {
+            handler1.send("draw");
+            handler2.send("draw");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -209,19 +239,19 @@ public class GameManager {
         }
     }
 
-    public void draw() {
-        try {
-            handler1.send("draw");
-            handler2.send("draw");
-            shutdown();
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-
     public void setPlayer2(String player2) {
         this.player2 = player2;
         this.playersJoined = 2;
+        playerDB.update(player2Model, player2);
+        playerDB.saveChanges();
+        
+
+        player2Model.setPlayerName(player2);
+        gameModel.setPlayer2(player2Model);
+        gameModel.setStartTime(Timestamp.class.cast(new Timestamp(System.currentTimeMillis())));
+        gameDB.update(gameModel);
+        gameDB.saveChanges();
+
         try {
             handler1.send("createBoard");
             handler2.send("createBoard");
@@ -255,5 +285,13 @@ public class GameManager {
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

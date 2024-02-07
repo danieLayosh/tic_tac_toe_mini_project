@@ -77,11 +77,12 @@ public class GameDB extends BaseDB {
         String sqlStr = "";
         if (entity instanceof GameModel) {
             GameModel game = (GameModel) entity;
+
             sqlStr = "INSERT INTO games (player1, player2, winner, boardSize, result, startTime, endTime) VALUES ('"
                     + game.getPlayer1().getPlayerName() + "', '" +
                     game.getPlayer2().getPlayerName() + "', '"
-                    + game.getWinner().getPlayerName() + "', " + game.getBoardSize() + ", '" +
-                    game.getResult().toString()
+                    + ((game.getWinner() != null ) ? game.getWinner().getPlayerName() : "NO WINNER") + "', " + game.getBoardSize() + ", '" +
+                    game.getResult()
                     + "', '" + game.getStartTime() + "', '" + game.getEndTime() + "')";
         }
         return sqlStr;
@@ -95,7 +96,7 @@ public class GameDB extends BaseDB {
             sqlStr = "UPDATE games SET player1 = '" +
                     game.getPlayer1().getPlayerName() + "', player2 = '" +
                     game.getPlayer2().getPlayerName() + "', winner = '" +
-                    game.getWinner().getPlayerName() + "', boardSize = " +
+                    ((game.getWinner() != null) ? game.getWinner().getPlayerName() : "NO WINNER") + "', boardSize = " +
                     game.getBoardSize() + ", result = '" + game.getResult().toString() + "',startTime = '" +
                     game.getStartTime() + "', endTime = '" + game.getEndTime() + "' WHERE gameId = " + game.getId();
         }
