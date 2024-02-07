@@ -29,7 +29,7 @@ public class PlayerDB extends BaseDB {
         if (entity instanceof PlayerModel) {
             return createModel((PlayerModel) entity, res);
         }
-        return null; // Or handle appropriately
+        return null; 
     }
 
     public PlayerList selectAll() {
@@ -49,20 +49,61 @@ public class PlayerDB extends BaseDB {
         return selectByName(name).get(0);
     }
 
-    public int insert(PlayerModel player) {
-        String sqlStr = "INSERT INTO players (playerName) VALUES ('" + player.getPlayerName() + "')";
-        return super.saveChanges(sqlStr);
+    @Override
+    public String createInsertSql(BaseEntity entity) {
+        String sqlStr = "";
+        if (entity instanceof PlayerModel) {
+            PlayerModel player = (PlayerModel) entity;
+            sqlStr = "INSERT INTO players (playerName) VALUES ('" + player.getPlayerName() + "')";
+        }
+        return sqlStr;
     }
 
-    public int update(PlayerModel player, String newName) {
-        String sqlStr = "UPDATE players SET playerName = '" + newName + "' WHERE playerName = '"
-                + player.getPlayerName() + "'";
-        return super.saveChanges(sqlStr);
+    @Override
+    public String createUpdateSql(BaseEntity entity) {
+        String sqlStr = "";
+        if (entity instanceof PlayerModel) {
+            PlayerModel player = (PlayerModel) entity;
+            sqlStr = "UPDATE players SET playerName = '" + player.getPlayerName() + "' WHERE playerName = '"
+                    + player.getPlayerName() + "'";
+        }
+        return sqlStr;
     }
 
-    public int delete(PlayerModel player) {
-        String sqlStr = "DELETE FROM players WHERE playerName = '" + player.getPlayerName() + "'";
-        return super.saveChanges(sqlStr);
+    @Override
+    public String createDeleteSql(BaseEntity entity) {
+        String sqlStr = "";
+        if (entity instanceof PlayerModel) {
+            PlayerModel player = (PlayerModel) entity;
+            sqlStr = "DELETE FROM players WHERE playerName = '" + player.getPlayerName() + "'";
+        }
+        return sqlStr;
+    }
+
+    @Override
+    public void insert(BaseEntity entity) {
+        if (entity instanceof PlayerModel) {
+            inserted.add(new ChangeEntity(entity, this::createInsertSql));
+        }
+    }
+
+    @Override
+    public void update(BaseEntity entity) {
+        if (entity instanceof PlayerModel) {
+            updated.add(new ChangeEntity(entity, this::createUpdateSql));
+        }
+    }
+
+    @Override
+    public void delete(BaseEntity entity) {
+        if (entity instanceof PlayerModel) {
+            deleted.add(new ChangeEntity(entity, this::createDeleteSql));
+        }
+    }
+
+    @Override
+    protected BaseDB me() {
+        return this;
     }
 
 }

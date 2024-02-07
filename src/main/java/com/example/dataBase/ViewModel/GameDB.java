@@ -20,6 +20,14 @@ public class GameDB extends BaseDB {
     }
 
     @Override
+    protected BaseEntity createModel(BaseEntity entity, ResultSet res) throws SQLException {
+        if (entity instanceof GameModel) {
+            return createModel((GameModel) entity, res);
+        }
+        return null;
+    }
+
+    @Override
     protected BaseEntity newEntity() {
         return new GameModel();
     }
@@ -69,30 +77,65 @@ public class GameDB extends BaseDB {
         return list;
     }
 
-    public int insert(GameModel game) {
-        String sqlStr = "INSERT INTO games (player1, player2, winner, boardSize, result, startTime, endTime) VALUES ('"
-                + game.getPlayer1().getPlayerName() + "', '" + game.getPlayer2().getPlayerName() + "', '"
-                + game.getWinner().getPlayerName() + "', " + game.getBoardSize() + ", '" + game.getResult().toString()
-                + "', '" + game.getStartTime() + "', '" + game.getEndTime() + "')";
-        return super.saveChanges(sqlStr);
+    @Override
+    public String createInsertSql(BaseEntity entity) {
+        String sqlStr = "";
+        if (entity instanceof GameModel) {
+            GameModel game = (GameModel) entity;
+            sqlStr = "INSERT INTO games (player1, player2, winner, boardSize, result, startTime, endTime) VALUES ('"
+                    + game.getPlayer1().getPlayerName() + "', '" +
+                    game.getPlayer2().getPlayerName() + "', '"
+                    + game.getWinner().getPlayerName() + "', " + game.getBoardSize() + ", '" +
+                    game.getResult().toString()
+                    + "', '" + game.getStartTime() + "', '" + game.getEndTime() + "')";
+        }
+        return sqlStr;
     }
 
-    public int update(GameModel game) {
-        String sqlStr = "UPDATE games SET player1 = '" + game.getPlayer1().getPlayerName() + "', player2 = '"
-                + game.getPlayer2().getPlayerName() + "', winner = '" + game.getWinner().getPlayerName()
-                + "', boardSize = "
-                + game.getBoardSize() + ", result = '" + game.getResult().toString() + "', startTime = '"
-                + game.getStartTime() + "', endTime = '" + game.getEndTime() + "' WHERE gameId = " + game.getId();
-        return super.saveChanges(sqlStr);
+    @Override
+    public String createUpdateSql(BaseEntity entity) {
+        String sqlStr = "";
+        if (entity instanceof GameModel) {
+            GameModel game = (GameModel) entity;
+            sqlStr = "UPDATE games SET player1 = '" +
+                    game.getPlayer1().getPlayerName() + "', player2 = '" +
+                    game.getPlayer2().getPlayerName() + "', winner = '" +
+                    game.getWinner().getPlayerName() + "', boardSize = " +
+                    game.getBoardSize() + ", result = '" + game.getResult().toString() + "',startTime = '" +
+                    game.getStartTime() + "', endTime = '" + game.getEndTime() + "' WHERE gameId = " + game.getId();
+        }
+        return sqlStr;
     }
 
-    public int delete(int id) {
-        String sqlStr = "DELETE FROM games WHERE gameId = " + id;
-        return super.saveChanges(sqlStr);
+    @Override
+    public String createDeleteSql(BaseEntity entity) {
+        String sqlStr = "";
+        if (entity instanceof GameModel) {
+            GameModel game = (GameModel) entity;
+            sqlStr = "DELETE FROM games WHERE gameId = " + game.getId();
+        }
+        return sqlStr;
     }
 
-    public int delete(GameModel game) {
-        return delete(game.getId());
+    @Override
+    public void insert(BaseEntity entity) {
+        if (entity instanceof GameModel) {
+            inserted.add(new ChangeEntity(entity, this::createInsertSql));
+        }
+    }
+
+    @Override
+    public void update(BaseEntity entity) {
+        if (entity instanceof GameModel) {
+            updated.add(new ChangeEntity(entity, this::createUpdateSql));
+        }
+    }
+
+    @Override
+    public void delete(BaseEntity entity) {
+        if (entity instanceof GameModel) {
+            deleted.add(new ChangeEntity(entity, this::createDeleteSql));
+        }
     }
 
     protected GameModel createModel(GameModel game, ResultSet res) throws SQLException {
@@ -133,10 +176,7 @@ public class GameDB extends BaseDB {
     }
 
     @Override
-    protected BaseEntity createModel(BaseEntity entity, ResultSet res) throws SQLException {
-        if (entity instanceof GameModel) {
-            return createModel((GameModel) entity, res);
-        }
-        return null;
+    protected BaseDB me() {
+        return this;
     }
 }

@@ -2,6 +2,7 @@ package com.example.dataBase.ViewModel;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -22,6 +23,16 @@ public abstract class BaseDB extends BaseEntity {
     protected abstract BaseEntity createModel(BaseEntity entity, ResultSet res) throws SQLException;
 
     protected abstract BaseEntity newEntity();
+
+    protected ArrayList<ChangeEntity> inserted = new ArrayList<>();
+    protected ArrayList<ChangeEntity> updated = new ArrayList<>();
+    protected ArrayList<ChangeEntity> deleted = new ArrayList<>();
+
+    public abstract String createInsertSql(BaseEntity entity);
+
+    public abstract String createUpdateSql(BaseEntity entity);
+
+    public abstract String createDeleteSql(BaseEntity entity);
 
     public BaseDB() {
         super();
@@ -51,14 +62,86 @@ public abstract class BaseDB extends BaseEntity {
         return list;
     }
 
-    public int saveChanges(String sqlStr) {
+    public int saveChanges() {
         int rows = 0;
+        String sqlStr = "";
         try {
-            rows = stmt.executeUpdate(sqlStr);
+            Statement statement = connection.createStatement();
+            for (ChangeEntity item : inserted) {
+                sqlStr = item.getSqlCreator().CreateSql(item.getEntity());
+                rows += statement.executeUpdate(sqlStr, Statement.RETURN_GENERATED_KEYS);
+
+                res = statement.getGeneratedKeys();
+                if (res.next()) {
+                    item.getEntity().setId(res.getInt(1));
+                }
+            }
+            for (ChangeEntity item : updated) {
+                sqlStr = item.getSqlCreator().CreateSql(item.getEntity());
+                rows += statement.executeUpdate(sqlStr);
+            }
+            for (ChangeEntity item : deleted) {
+                sqlStr = item.getSqlCreator().CreateSql(item.getEntity());
+                rows += statement.executeUpdate(sqlStr);
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage() + "\nSQL: " + sqlStr);
+        } finally {
+            inserted.clear();
+            updated.clear();
+            deleted.clear();
         }
         return rows;
+    }
+
+    protected abstract BaseDB me();
+
+    public void insert(BaseEntity entity) {
+        BaseEntity reqEntity = this.newEntity();
+        BaseDB me = this.me();
+        SQLCreator sqlCreator = null;
+        if (entity != null && entity.getClass() == reqEntity.getClass()) {
+            sqlCreator = new SQLCreator() {
+                @Override
+                public String CreateSql(BaseEntity entity) {
+                    return me.createInsertSql(entity);
+                }
+            };
+        }
+        ChangeEntity changeEntity = new ChangeEntity(entity, sqlCreator);
+        inserted.add(changeEntity);
+    }
+
+    public void update(BaseEntity entity) {
+        BaseEntity reqEntity = this.newEntity();
+        BaseDB me = this.me();
+        SQLCreator sqlCreator = null;
+        if (entity != null && entity.getClass() == reqEntity.getClass()) {
+            sqlCreator = new SQLCreator() {
+                @Override
+                public String CreateSql(BaseEntity entity) {
+                    return me.createInsertSql(entity);
+                }
+            };
+            ChangeEntity changeEntity = new ChangeEntity(entity, sqlCreator);
+            updated.add(changeEntity);
+        }
+    }
+
+    public void delete(BaseEntity entity) {
+        BaseEntity reqEntity = this.newEntity();
+        BaseDB me = this.me();
+        SQLCreator sqlCreator = null;
+        if (entity != null && entity.getClass() == reqEntity.getClass()) {
+            sqlCreator = new SQLCreator() {
+                @Override
+                public String CreateSql(BaseEntity entity) {
+                    return me.createInsertSql(entity);
+                }
+            };
+            ChangeEntity changeEntity = new ChangeEntity(entity, sqlCreator);
+            deleted.add(changeEntity);
+        }
     }
 
 }
