@@ -1,17 +1,12 @@
 package com.example.dataBase.ViewModel;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 import com.example.dataBase.Model.BaseEntity;
 import com.example.dataBase.Model.GameModel;
-import com.example.dataBase.Model.PlayerModel;
 import com.example.dataBase.Model.Collection.GameList;
-import com.example.dataBase.Model.Collection.PlayerList;
 
 public class GameDB extends BaseDB {
 
