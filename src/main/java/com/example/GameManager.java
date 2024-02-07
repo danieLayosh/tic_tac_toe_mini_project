@@ -242,12 +242,26 @@ public class GameManager {
     public void setPlayer2(String player2) {
         this.player2 = player2;
         this.playersJoined = 2;
-        playerDB.update(player2Model, player2);
-        playerDB.saveChanges();
-        
+        PlayerModel p2Model = playerDB.selectByName(player2).get(0);
+        if (p2Model == null) {
+            System.out.println("Player 2 does not exist");
+            playerDB.update(player2Model, player2);
+            gameModel.setPlayer2(player2Model);
 
-        player2Model.setPlayerName(player2);
-        gameModel.setPlayer2(player2Model);
+        } else {
+            System.out.println("Player 2 already exists");
+            // playerDB.update(player2Model, player2);
+            // playerDB.saveChanges();
+            gameModel.setPlayer2(p2Model);
+            gameDB.update(gameModel);
+            gameDB.saveChanges();
+
+            playerDB.delete(player2Model);
+        }
+
+        playerDB.saveChanges();
+
+        // player2Model.setPlayerName(player2);
         gameModel.setStartTime(Timestamp.class.cast(new Timestamp(System.currentTimeMillis())));
         gameDB.update(gameModel);
         gameDB.saveChanges();
