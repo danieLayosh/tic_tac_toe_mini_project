@@ -29,7 +29,7 @@ public class PlayerDB extends BaseDB {
         if (entity instanceof PlayerModel) {
             return createModel((PlayerModel) entity, res);
         }
-        return null; 
+        return null;
     }
 
     public PlayerList selectAll() {
@@ -55,6 +55,16 @@ public class PlayerDB extends BaseDB {
         if (entity instanceof PlayerModel) {
             PlayerModel player = (PlayerModel) entity;
             sqlStr = "INSERT INTO players (playerName) VALUES ('" + player.getPlayerName() + "')";
+        }
+        return sqlStr;
+    }
+
+    public String createUpdateSql(BaseEntity entity, String name) {
+        String sqlStr = "";
+        if (entity instanceof PlayerModel) {
+            PlayerModel player = (PlayerModel) entity;
+            sqlStr = "UPDATE players SET playerName = '" + name + "' WHERE playerName = '"
+                    + player.getPlayerName() + "'";
         }
         return sqlStr;
     }
@@ -92,6 +102,10 @@ public class PlayerDB extends BaseDB {
         if (entity instanceof PlayerModel) {
             updated.add(new ChangeEntity(entity, this::createUpdateSql));
         }
+    }
+
+    public void update(PlayerModel player1, String string) {
+        updated.add(new ChangeEntity(player1, (entity) -> createUpdateSql(entity, string)));
     }
 
     @Override

@@ -3,12 +3,6 @@ package com.example;
 import java.util.ArrayList;
 
 import com.example.IProtocol.ICommunicationHandler;
-import com.example.dataBase.Model.GameModel;
-import com.example.dataBase.Model.PlayerModel;
-import com.example.dataBase.Model.Collection.GameList;
-import com.example.dataBase.Model.Collection.PlayerList;
-import com.example.dataBase.ViewModel.GameDB;
-import com.example.dataBase.ViewModel.PlayerDB;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -22,70 +16,6 @@ public class Server {
     public static final String PLAYER1 = "1", PLAYER2 = "2";
 
     public static void main(String[] args) {
-        // System.out.println("print the current date:" + new java.util.Date());
-        // System.out.println("print the current time:" + new
-        // java.util.Date().getTime());
-
-        // PlayerDB playerDB = new PlayerDB();
-        // PlayerModel player = new PlayerModel("tammy2");
-        // playerDB.insert(player);
-        // playerDB.saveChanges();
-
-        // Initialize database access objects
-        PlayerDB playerDB = new PlayerDB();
-        GameDB gameDB = new GameDB();
-
-        // Example player names
-        String player1Name = "test1";
-        String player2Name = "test2";
-
-        // Insert players
-        PlayerModel player1 = new PlayerModel();
-        player1.setPlayerName(player1Name);
-        playerDB.insert(player1);
-
-        PlayerModel player2 = new PlayerModel();
-        player2.setPlayerName(player2Name);
-        playerDB.insert(player2);
-
-        // Commit changes to insert players
-        playerDB.saveChanges();
-
-        // Insert a game
-        GameModel game2 = new GameModel();
-        game2.setPlayer1(player1);
-        game2.setPlayer2(player2);
-        game2.setWinner(player1); // Let's say player1 wins
-        game2.setBoardSize(3); // Example board size
-        game2.setResult(GameModel.Result.WIN); // Example result
-        game2.setStartTime(new Timestamp(System.currentTimeMillis()));
-        game2.setEndTime(new Timestamp(System.currentTimeMillis() + 50000));
-        gameDB.insert(game2);
-
-        // Commit changes to insert the game2
-        gameDB.saveChanges();
-
-        // Select and print all players
-        System.out.println("All Players:");
-        PlayerList allPlayers = playerDB.selectAll();
-        allPlayers.forEach(p -> System.out.println(p.getPlayerName()));
-
-        // Select and print all games
-        System.out.println("\nAll Games:");
-        GameList allGames = gameDB.selectAll();
-        allGames.forEach(g -> System.out.println("Game ID: " + g.getId() + ", Winner: "
-                + ((g.getWinner() != null) ? g.getWinner().getPlayerName() : "NO WINNER")));
-
-        // Update a player's name (not implemented in provided code snippets)
-        // playerDB.update(player1, "AliceUpdated");
-        // playerDB.saveChanges();
-
-        // Delete a player (not implemented in provided code snippets)
-        // playerDB.delete(player1);
-        // playerDB.saveChanges();
-
-        // Note: The saveChanges method must be adapted to execute the SQL operations
-        // accumulated in the insert, update, and delete methods.
 
         ArrayList<GameManager> games = new ArrayList<GameManager>(); // create a list of games
         try {
