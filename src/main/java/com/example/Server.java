@@ -3,10 +3,11 @@ package com.example;
 import java.util.ArrayList;
 
 import com.example.IProtocol.ICommunicationHandler;
+import com.example.dataBase.ViewModel.GameDB;
+import com.example.dataBase.ViewModel.PlayerDB;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Timestamp;
 
 public class Server {
     private enum loginMessage {
