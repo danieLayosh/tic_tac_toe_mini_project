@@ -19,7 +19,6 @@ public class Server {
         ArrayList<GameManager> games = new ArrayList<GameManager>(); // create a list of games
         try {
             ServerSocket server = new ServerSocket();// make a new server
-            // SocketCommunication socketCommunication = new SocketCommunication(null);
             server.bind(new java.net.InetSocketAddress(SocketCommunication.getHost(), SocketCommunication.getPort()));
             System.out.println("Server started on port - " + server.getLocalPort() + " - waiting for clients...");
 

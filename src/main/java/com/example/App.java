@@ -16,7 +16,7 @@ public class App extends Application {
     private static Stage primaryStage;
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 
     @Override
