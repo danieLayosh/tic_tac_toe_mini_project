@@ -3,7 +3,9 @@ package com.example;
 import com.example.IProtocol.ICommunicationHandler;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class SocketCommunication implements ICommunicationHandler {
 
@@ -11,10 +13,25 @@ public class SocketCommunication implements ICommunicationHandler {
     private DataInputStream in;
     private DataOutputStream out;
     private static int PORT = 8080;
-    private static String HOST = "0.0.0.0";
-    // private static String HOST = "192.168.16.176";
+    private static String HOST;
+
+    public SocketCommunication() {
+        initializeSocketCommunication();
+    }
+
+    public void initializeSocketCommunication() {
+        try {
+            InetAddress localhost = InetAddress.getLocalHost();
+            byte[] ip = localhost.getAddress();
+            this.HOST = (ip[0] & 0xFF) + "." + (ip[1] & 0xFF) + "." + (ip[2] & 0xFF) + "." + (ip[3] & 0xFF);
+        } catch (UnknownHostException e) {
+            System.out.println("Error in SocketCommunication -> getHost: " + e.getMessage());
+        }
+    }
 
     public SocketCommunication(Socket socket) {
+        initializeSocketCommunication();
+
         this.socket = socket;
         try {
             this.in = new DataInputStream(socket.getInputStream());
@@ -47,15 +64,19 @@ public class SocketCommunication implements ICommunicationHandler {
     @Override
     public void close() {
         try {
-            if (in != null) in.close();
-            if (out != null) out.close();
-            if (socket != null) socket.close();
+            if (in != null)
+                in.close();
+            if (out != null)
+                out.close();
+            if (socket != null)
+                socket.close();
         } catch (Exception e) {
             System.out.println("Error in SocketCommunication -> close: " + e.getMessage());
         }
     }
 
     public static String getHost() {
+        SocketCommunication sc = new SocketCommunication();
         return HOST;
     }
 
