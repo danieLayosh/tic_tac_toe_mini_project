@@ -225,8 +225,6 @@ public class GameManager {
 
     public void updateGUI() {
         try {
-            // handler1.send("getPlayers" + player1 + " " + player2);
-            // handler2.send("getPlayers" + player1 + " " + player2);
             handler1.send("showPlayerName" + " " + player1);
             handler2.send("showPlayerName" + " " + player2);
             handler1.send("opponentname" + " " + player2);

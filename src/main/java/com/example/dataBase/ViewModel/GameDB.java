@@ -81,7 +81,8 @@ public class GameDB extends BaseDB {
             sqlStr = "INSERT INTO games (player1, player2, winner, boardSize, result, startTime, endTime) VALUES ('"
                     + game.getPlayer1().getPlayerName() + "', '" +
                     game.getPlayer2().getPlayerName() + "', '"
-                    + ((game.getWinner() != null ) ? game.getWinner().getPlayerName() : "NO WINNER") + "', " + game.getBoardSize() + ", '" +
+                    + ((game.getWinner() != null) ? game.getWinner().getPlayerName() : "NO WINNER") + "', "
+                    + game.getBoardSize() + ", '" +
                     game.getResult()
                     + "', '" + game.getStartTime() + "', '" + game.getEndTime() + "')";
         }
