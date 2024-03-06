@@ -23,7 +23,7 @@ public class SocketCommunication implements ICommunicationHandler {
         try {
             InetAddress localhost = InetAddress.getLocalHost();
             byte[] ip = localhost.getAddress();
-            this.HOST = (ip[0] & 0xFF) + "." + (ip[1] & 0xFF) + "." + (ip[2] & 0xFF) + "." + (ip[3] & 0xFF);
+            HOST = (ip[0] & 0xFF) + "." + (ip[1] & 0xFF) + "." + (ip[2] & 0xFF) + "." + (ip[3] & 0xFF);
         } catch (UnknownHostException e) {
             System.out.println("Error in SocketCommunication -> getHost: " + e.getMessage());
         }
@@ -76,7 +76,7 @@ public class SocketCommunication implements ICommunicationHandler {
     }
 
     public static String getHost() {
-        SocketCommunication sc = new SocketCommunication();
+        new SocketCommunication();
         return HOST;
     }
 

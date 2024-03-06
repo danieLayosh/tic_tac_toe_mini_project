@@ -97,6 +97,7 @@ public class Server {
             String[] msgArr = message.split(" ");
             String command = msgArr[0].trim().toLowerCase(); // Normalize the command string
 
+            // Switch on the command
             switch (command) {
                 case "isfull":
                     communicationHandler.send("isFull " + currentgame.isFull());

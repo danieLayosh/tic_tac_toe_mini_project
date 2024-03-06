@@ -17,7 +17,6 @@ public class GameModel extends BaseEntity {
 
     public GameModel() {
         super();
-
     }
 
     public GameModel(PlayerModel player1, PlayerModel player2, int boardSize, Timestamp restTimes) {
